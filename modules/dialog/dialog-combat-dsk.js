@@ -7,6 +7,7 @@ import SpecialabilityRulesDSK from "../system/specialability-rules.js";
 import DSKDialog from "./dialog-dsk.js";
 import DialogShared from "./dialog-shared.js";
 import DSK from "../system/config.js";
+const { mergeObject, getProperty } = foundry.utils
 
 export default class DSKCombatDialog extends DialogShared {
     static get defaultOptions() {
@@ -58,7 +59,7 @@ export default class DSKCombatDialog extends DialogShared {
                     siblings.find(".step").text(DialogShared.roman[0]);
                 }
             } else if (ev.button == 2) {
-                step = Math.clamped(maxStep, 0, step - 1)
+                step = Math.clamp(maxStep, 0, step - 1)
             }
             elem.attr("data-step", step);
             if (step > 0) {

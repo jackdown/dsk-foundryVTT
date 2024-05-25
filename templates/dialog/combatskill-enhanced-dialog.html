@@ -89,11 +89,7 @@
             <div class="form-group custom-select">
                 <label>{{localize "dsk.mount"}}</label>
                 <select name="mountedOptions">
-                    {{#select "0"}}
-                    {{#each mountedOptions as |label val|}}
-                    <option value="{{val}}">{{localize label}} ({{val}})</option>
-                    {{/each}}
-                    {{/select}}
+                    {{selectOptions mountedOptions selected="0" inverted=true}}
                 </select>
             </div>
 

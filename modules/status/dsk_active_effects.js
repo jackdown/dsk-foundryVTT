@@ -1,4 +1,5 @@
 import ActorDSK from "../actor/actor_dsk.js";
+const { getProperty, setProperty, getType } = foundry.utils
 
 export default class DSKActiveEffect extends ActiveEffect {
     static itemChangeRegex = /^@/
@@ -30,32 +31,33 @@ export default class DSKActiveEffect extends ActiveEffect {
         return { items, key, value }
     }
 
-    static async _onCreateDocuments(documents, context) {
+    static async _onCreateOperation(documents, operation, user) {
         for(let doc of documents) {
             if(doc.parent.documentName == "Actor")
                 await ActorDSK.postUpdateConditions(doc.parent)
         }
-        return super._onCreateDocuments(documents, context);
+        return super._onCreateOperation(documents, operation, user);
       }
 
-    static async _onUpdateDocuments(documents, context) {
+    static async _onUpdateOperation(documents, operation, user) {
         for(let doc of documents) {
             if(doc.parent.documentName == "Actor")
                 await ActorDSK.postUpdateConditions(doc.parent)
         }
-        return super._onUpdateDocuments(documents, context);
+        return super._onUpdateOperation(documents, operation, user);
     }
 
-    static async _onDeleteDocuments(documents, context) {
+    static async _onDeleteOperation(documents, operation, user) {
         for(let doc of documents) {
             if(doc.parent.documentName == "Actor")
                 await ActorDSK.postUpdateConditions(doc.parent)
         }
-        return super._onDeleteDocuments(documents, context);
+        return super._onDeleteOperation(documents, operation, user);
     }
+    
 
     async _preUpdate(changed, options, user) {
-        super._preUpdate(changed, options, user);
+        await super._preUpdate(changed, options, user);
         this._clearModifiedItems()
     }
 

@@ -1,4 +1,5 @@
 import ActorSheetCharacter from "./actor_sheet_character.js";
+const { mergeObject } = foundry.utils
 
 export default class ActorSheetNPC extends ActorSheetCharacter{
     static get defaultOptions() {

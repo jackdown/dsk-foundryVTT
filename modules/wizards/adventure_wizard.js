@@ -3,6 +3,7 @@ import DSKStatusEffects from "../status/status_effects.js"
 import DSKChatAutoCompletion from "../system/chat_autocompletion.js"
 import DSKUtility from "../system/dsk_utility.js"
 import { slist } from "../system/view_helper.js"
+const { mergeObject, duplicate } = foundry.utils
 
 export default class BookWizard extends Application {
     static wizard
@@ -48,16 +49,11 @@ export default class BookWizard extends Application {
         buttons.unshift({
             label: "Library",
             class: "library",
+            tooltip: "dsk.Book.home",
             icon: `fas fa-book`,
             onclick: async ev => this._showBooks()
         })
         return buttons
-    }
-
-    async _render(force = false, options = {}) {
-        await super._render(force, options)
-
-        $(this._element).find('.library').attr("data-tooltip", game.i18n.localize("dsk.Book.home"))
     }
 
     _showBooks() {

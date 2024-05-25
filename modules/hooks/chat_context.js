@@ -1,5 +1,6 @@
 import ActorDSK from "../actor/actor_dsk.js";
 import DSKUtility from "../system/dsk_utility.js";
+const { getProperty } = foundry.utils
 
 export function initChatContext() {
     const fateAvailable = (actor, group) => { return DSKUtility.fateAvailable(actor, group) }

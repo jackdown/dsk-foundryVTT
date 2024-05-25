@@ -1,6 +1,7 @@
 import DSKDialog from "./dialog-dsk.js";
 import DialogShared from "./dialog-shared.js";
 import ActorDSK from "../actor/actor_dsk.js";
+const { mergeObject } = foundry.utils
 
 export default class SkillDialogDSK extends DialogShared {
     static getRollButtons(testData, dialogOptions, resolve, reject) {

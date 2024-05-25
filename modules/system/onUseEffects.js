@@ -1,6 +1,7 @@
 import RuleChaos from "./rule_chaos.js";
 import DSKSoundEffect from "./dsk-soundeffect.js";
 import DSKUtility from "./dsk_utility.js";
+const { duplicate } = foundry.utils
 
 export default class OnUseEffect {
     constructor(item) {
@@ -73,16 +74,13 @@ export default class OnUseEffect {
     effectDummy(label, changes, duration) {
         return {
             label,
-            icon: "icons/svg/aura.svg",
+            img: "icons/svg/aura.svg",
             changes,
             duration,
             flags: {
                 dsk: {
                     value: null,
-                    editable: true,
-                    customizable: true,
-                    description: label,
-                    custom: true,
+                    description: label
                 },
             },
         };

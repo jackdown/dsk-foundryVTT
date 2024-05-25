@@ -1,5 +1,6 @@
 import DSK from './config.js'
 import DSKUtility from './dsk_utility.js'
+const { duplicate } = foundry.utils
 
 export default class ItemRulesDSK {
     static children = {}
@@ -11,7 +12,7 @@ export default class ItemRulesDSK {
             const activeEffect = {
                 "changes": [change],
                 "duration": {},
-                "icon": "icons/svg/aura.svg",
+                "img": "icons/svg/aura.svg",
                 "label": `${name} (${adoption.name})`,
                 "transfer": true,
                 "flags": {

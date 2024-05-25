@@ -1,3 +1,5 @@
+const { mergeObject } = foundry.utils
+
 export default class DSKJournalSheet extends JournalSheet{
     static get defaultOptions(){
         const optns = super.defaultOptions

@@ -1,5 +1,6 @@
 import ActorDSK from "../actor/actor_dsk.js"
 import OnUseEffect from "./onUseEffects.js";
+const { getProperty, mergeObject, duplicate } = foundry.utils
 
 export default class TokenHotbar2 extends Application {
     static registerTokenHotbar() {
@@ -222,7 +223,7 @@ export default class TokenHotbar2 extends Application {
         if (actor) {
             const moreSkills = []
             let moreSpells = []
-            effects = (await actor.actorEffects()).map(x => { return { name: x.name, id: x.id, icon: x.icon, cssClass: "effect", abbrev: `${x.name[0]} ${x.getFlag("dsk","value") || ""}`, subfunction: "effect" } })
+            effects = (await actor.actorEffects()).map(x => { return { name: x.name, id: x.id, icon: x.img, cssClass: "effect", abbrev: `${x.name[0]} ${x.getFlag("dsk","value") || ""}`, subfunction: "effect" } })
             if (game.combat) {
                 const combatskills = actor.items.filter(x => x.type == "combatskill").map(x => ActorDSK._calculateCombatSkillValues(x.toObject(), actor.system))
 
@@ -348,7 +349,7 @@ export default class TokenHotbar2 extends Application {
         if (!el.style.width || width) {
             const tarW = width || el.offsetWidth;
             const maxW = el.style.maxWidth || window.innerWidth;
-            currentPosition.width = width = Math.clamped(tarW, 0, maxW);
+            currentPosition.width = width = Math.clamp(tarW, 0, maxW);
             el.style.width = width + "px";
             if ((width + currentPosition.left) > window.innerWidth) left = currentPosition.left;
         }
@@ -379,7 +380,7 @@ class AddEffectDialog extends Dialog {
         const effects = duplicate(CONFIG.statusEffects).map(x => {
             return {
                 label: game.i18n.localize(x.name),
-                icon: x.icon,
+                icon: x.img,
                 description: game.i18n.localize(x.description),
                 id: x.id
             }

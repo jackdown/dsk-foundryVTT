@@ -1,5 +1,6 @@
 import DSK from "./config.js";
 import ItemRulesDSK from "./item-rules.js";
+const { duplicate } = foundry.utils
 
 export default class SpecialabilityRulesDSK extends ItemRulesDSK {
 

@@ -4,7 +4,7 @@ import DSKSoundEffect from "../system/dsk-soundeffect.js";
 import DSKUtility from "../system/dsk_utility.js";
 import DSKPayment from "../system/payment.js";
 import RuleChaos from "../system/rule_chaos.js";
-
+const { mergeObject, getProperty, duplicate } = foundry.utils
 //todo add on use button to merchant sheet
 
 export const MerchantSheetMixin = (superclass) => class extends superclass {
@@ -198,9 +198,10 @@ export const MerchantSheetMixin = (superclass) => class extends superclass {
     }
 
     static async finishTransaction(source, target, price, itemId, buy, amount) {
-        let item = source.items.get(itemId).toObject()
-        amount = Math.min(Number(item.system.quantity), amount)
+        const item = source.items.get(itemId).toObject()
         if (Number(item.system.quantity) > 0) {
+            amount = Math.min(Number(item.system.quantity), amount)
+            price = `${Number(price) * amount}`
             const noNeedToPay = this.noNeedToPay(target, source, price)
             const hasPaid = noNeedToPay || DSKPayment.payMoney(target, price, true)
             if (hasPaid) {
@@ -316,7 +317,7 @@ export const MerchantSheetMixin = (superclass) => class extends superclass {
 
     async _render(force = false, options = {}) {
         if (!game.user.isGM && getProperty(this.actor.system, "merchant.merchantType") == "loot" && getProperty(this.actor.system, "merchant.locked")) {
-            AudioHelper.play({ src: "sounds/lock.wav", loop: false }, false);
+            foundry.audio.AudioHelper.play({ src: "sounds/lock.wav", loop: false }, false);
             return
         }
         await super._render(force, options);
@@ -327,6 +328,7 @@ export const MerchantSheetMixin = (superclass) => class extends superclass {
         if (this.actor.isOwner) {
             buttons.unshift({
                 class: "playerview",
+                tooltip: "dsk.SHEET.switchLimited",
                 icon: `fas fa-toggle-on`,
                 onclick: async ev => this._togglePlayerview(ev)
             })
@@ -343,7 +345,7 @@ export const MerchantSheetMixin = (superclass) => class extends superclass {
         new Dialog({
             title: game.i18n.localize("dsk.MERCHANT.randomGoods"),
             content: html,
-            default: 'yes',
+            default: 'Yes',
             buttons: {
                 Yes: {
                     icon: '<i class="fa fa-check"></i>',
@@ -362,7 +364,7 @@ export const MerchantSheetMixin = (superclass) => class extends superclass {
         new Dialog({
             title: game.i18n.localize("dsk.MERCHANT.clearInventory"),
             content: game.i18n.localize("dsk.MERCHANT.deleteAllGoods"),
-            default: 'yes',
+            default: 'Yes',
             buttons: {
                 Yes: {
                     icon: '<i class="fa fa-check"></i>',
@@ -545,7 +547,6 @@ class SelectTradefriendDialog extends Dialog{
         const dialog = new SelectTradefriendDialog({
             title: game.i18n.localize("dsk.DIALOG.setTargetToUser"),
             content: await renderTemplate('systems/dsk/templates/dialog/selectTradeFriend.html', { users }),
-            default: "yes",
             buttons: {},
         })
         dialog.actor = actor

@@ -1,3 +1,5 @@
+const { setProperty, getProperty } = foundry.utils
+
 export default class RollMemory {
     constructor() {
         this.tokens = {}

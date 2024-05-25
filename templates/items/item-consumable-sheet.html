@@ -48,20 +48,14 @@
             <div class="form-group">
                 <label class="label-text">{{localize "dsk.equipmentType"}}</label>
                 <select name="system.category" data-dtype="String">
-                    {{#select system.category}}
-                    <option value="0">{{localize 'dsk.consumable.category.0'}}</option>
-                    {{/select}}
+                    {{selectOptions consumableCategories selected=system.category localize=true}}
                 </select>
             </div>
             
             <div class="form-group">
                 <label class="label-text">{{localize "dsk.consumable.qs.label"}}</label>
                 <select name="system.qs" data-dtype="String">
-                    {{#select system.qs}}
-                    <option value="0">{{localize 'dsk.consumable.qs.0'}}</option>
-                    <option value="1">{{localize 'dsk.consumable.qs.1'}}</option>
-                    <option value="2">{{localize 'dsk.consumable.qs.2'}}</option>
-                    {{/select}}
+                    {{selectOptions qsOptions selected=system.qs}}
                 </select>
             </div>
             <div class="form-group">

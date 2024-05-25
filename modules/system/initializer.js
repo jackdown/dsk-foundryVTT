@@ -1,5 +1,6 @@
 import ItemDSK from "../item/item_dsk.js"
 import DSKUtility from "./dsk_utility.js"
+const { getProperty } = foundry.utils
 
 export default class DSKInitializer extends Dialog {
     constructor(title, content, module, lang = "") {

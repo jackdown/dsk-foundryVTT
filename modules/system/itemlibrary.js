@@ -1,6 +1,6 @@
 import DSKUtility from "./dsk_utility.js"
 import ADVANCEDFILTERS from "./itemlibrary_advanced_filters.js"
-
+const { getProperty, debounce } = foundry.utils
 //TODO merge existing index with advanced details
 //TODO create index with getIndex(fields)
 //TODO check if we can use the uuid right from the start
@@ -533,7 +533,7 @@ export default class DSKItemLibrary extends Application {
         } else if (document == "JournalEntry") {
             func = (p) => { return p.getDocuments()}
         } else {
-            func = (p) => {return p.getDocuments({type__in: game.system.documentTypes.Item })}
+            func = (p) => {return p.getDocuments({type__in: Object.keys(game.system.documentTypes.Item) })}
         }
         const items = this.indexWorldItems(worldStuff, category)
         SceneNavigation.displayProgressBar({label: game.i18n.format('dsk.Library.loading', {item: "world items"}), pct: Math.round(percentage)})

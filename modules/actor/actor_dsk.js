@@ -11,6 +11,7 @@ import SpecialabilityRulesDSK from "../system/specialability-rules.js";
 import DSKDialog from "../dialog/dialog-dsk.js";
 import TraitRulesDSK from "../system/trait_rules.js"
 import DSKActiveEffectConfig from "../status/active_effects.js";
+const { getProperty, mergeObject, duplicate } = foundry.utils
 
 export default class ActorDSK extends Actor {
     static _baseCarryItems = new Set(["armor", "meleeweapon", "ammunition", "rangeweapon", "plant", "poison", "money", "consumable", "equipment"])
@@ -161,7 +162,7 @@ export default class ActorDSK extends Actor {
             data.stats.ini.value = Math.round(data.stats.ini.value) + baseInit;            
 
             for(let key of Object.keys(data.status)){
-              data.status[key] = Math.clamped(data.status[key], 0, 8)
+              data.status[key] = Math.clamp(data.status[key], 0, 8)
             }
 
             data.armorEncumbrance = this.getArmorEncumbrance(this, wornArmor);
@@ -208,18 +209,18 @@ export default class ActorDSK extends Actor {
       if (isMerchant) actor.prepareMerchant()      
     }
 
-    static async _onCreateDocuments(documents, context) {
+    static async _onCreateOperation(documents, operation, user) {
       for(let doc of documents) {
           await ActorDSK.postUpdateConditions(doc)
       }
-      return super._onCreateDocuments(documents, context);
+      return super._onCreateOperation(documents, operation, user);
     }
   
-    static async _onUpdateDocuments(documents, context) {
+    static async _onUpdateOperation(documents, operation, user) {
       for(let doc of documents) {
           await ActorDSK.postUpdateConditions(doc)
       }
-      return super._onUpdateDocuments(documents, context);
+      return super._onUpdateOperation(documents, operation, user);
     }
 
     _calcBagweight(elem, containers, topLevel = true) {
@@ -255,7 +256,7 @@ export default class ActorDSK extends Actor {
       if (pain > 0)
         pain += AdvantageRulesDSK.vantageStep(this, game.i18n.localize("dsk.LocalizedIDs.sensitiveToPain")) 
   
-      pain = Math.clamped(pain, 0, 8);
+      pain = Math.clamp(pain, 0, 8);
       data.status.inpain = pain
     }
 
@@ -270,7 +271,7 @@ export default class ActorDSK extends Actor {
           pain = Math.floor(5 - (5 * data.stats.LeP.value) / data.stats.LeP.max);
         }
       } 
-      return Math.clamped(pain, 0, 4)
+      return Math.clamp(pain, 0, 4)
     }
 
     static _calculateCombatSkillValues(i, actorData) {
@@ -302,15 +303,12 @@ export default class ActorDSK extends Actor {
       return {
         id: "locked",
         name: game.i18n.localize("dsk.MERCHANT.locked"),
-        icon: "icons/svg/padlock.svg",
+        img: "icons/svg/padlock.svg",
         flags: {
           dsk: {
             value: null,
-            editable: true,
-            noEffect: true,
             hidePlayers: true,
-            description: game.i18n.localize("dsk.MERCHANT.locked"),
-            custom: true,
+            description: game.i18n.localize("dsk.MERCHANT.locked")
           },
         },
       };
@@ -458,7 +456,7 @@ export default class ActorDSK extends Actor {
         speaker: message.speaker,
         template: data.template,
         title: data.title,
-        user: message.user,
+        user: message.author,
       };
       if (data.attackerMessage) cardOptions.attackerMessage = data.attackerMessage;
       if (data.defenderMessage) cardOptions.defenderMessage = data.defenderMessage;
@@ -522,7 +520,7 @@ export default class ActorDSK extends Actor {
               if (diesToReroll.length > 0) {
                 let oldDamageRoll = Roll.fromData(data.postData.damageRoll);
                 let newRoll = await DiceDSK.manualRolls(
-                  await new Roll(oldDamageRoll.formula || oldDamageRoll._formula).evaluate({ async: true }),
+                  await new Roll(oldDamageRoll.formula || oldDamageRoll._formula).evaluate(),
                   "dsk.CHATCONTEXT.rerollDamage"
                 );
                 await DiceDSK.showDiceSoNice(newRoll, newTestData.rollMode);
@@ -587,7 +585,7 @@ export default class ActorDSK extends Actor {
                   newRoll.push(term.number + "d" + term.faces + "[" + term.options.colorset + "]");
                 }
                 newRoll = await DiceDSK.manualRolls(
-                  await new Roll(newRoll.join("+")).evaluate({ async: true }),
+                  await new Roll(newRoll.join("+")).evaluate(),
                   "dsk.CHATCONTEXT.Reroll"
                 );
                 await DiceDSK.showDiceSoNice(newRoll, newTestData.rollMode);
@@ -661,7 +659,7 @@ export default class ActorDSK extends Actor {
                   newRoll.push(term.number + "d" + term.faces + "[" + term.options.colorset + "]");
                 }
                 newRoll = await DiceDSK.manualRolls(
-                  await new Roll(newRoll.join("+")).evaluate({ async: true }),
+                  await new Roll(newRoll.join("+")).evaluate(),
                   "dsk.CHATCONTEXT.talentedReroll"
                 );
                 await DiceDSK.showDiceSoNice(newRoll, newTestData.rollMode);
@@ -710,7 +708,7 @@ export default class ActorDSK extends Actor {
   
       let updates;
       if ( isBar ) {
-        if (isDelta) value = Math.clamped(current.min || 0, Number(current.value) + value, current.max);
+        if (isDelta) value = Math.clamp(current.min || 0, Number(current.value) + value, current.max);
         updates = {[`system.${attribute}.value`]: value};
       } else {
         if ( isDelta ) value = Number(current) + value;
@@ -893,8 +891,10 @@ export default class ActorDSK extends Actor {
    
           if (item.system.ammunitionType != "-") {
             item.ammo = ammunitions.filter((x) => x.system.ammunitionType == item.system.ammunitionType);
+
+            for(let am of item.ammo) am.label = `(${am.system.quantity}) ${am.name}`
     
-            currentAmmo = ammunitions.find((x) => x._id == item.system.currentAmmo);
+            currentAmmo = item.ammo.find((x) => x._id == item.system.currentAmmo);
             if (currentAmmo) {
               const rangeMultiplier = Number(currentAmmo.system.rangeMultiplier) || 1;
               item.calculatedRange = item.calculatedRange
@@ -1384,7 +1384,7 @@ export default class ActorDSK extends Actor {
                 new Dialog({
                     title: game.i18n.localize("dsk.DSKError.NotEnoughXP"),
                     content: template,
-                    default: "yes",
+                    default: "Yes",
                     buttons: {
                         Yes: {
                             icon: '<i class="fa fa-check"></i>',
@@ -1745,23 +1745,28 @@ export default class ActorDSK extends Actor {
         }
     }
 
-    async _preUpdate(data, options, user) {
-        await super._preUpdate(data, options, user);
+    _containsChangedAttribute(data, key) {
+      const newValue = getProperty(data, key)
+      return [null, undefined].includes(newValue) || newValue === getProperty(this, key) ? false : newValue
+    }
 
+    async _preUpdate(data, options, user) {
         const statusText = {
             LeP: 0x8b0000,
             AeP: 0x0b0bd9
         };
-        const scolls = [];
+        const scrolls = [];
         for (let key of Object.keys(statusText)) {
-            const value = getProperty(data, `system.stats.${key}.value`);
+            const value = this._containsChangedAttribute(data, `system.stats.${key}.value`);
             if (value)
-                scolls.push({
+              scrolls.push({
                     value: value - this.system.stats[key].value,
                     stroke: statusText[key],
                 });
         }
-        if (scolls.length) this.tokenScrollingText(scolls);
+        if (scrolls.length) this.tokenScrollingText(scrolls);
+
+        return super._preUpdate(data, options, user);
     }
 
     _itemPreparationError(item, error) {

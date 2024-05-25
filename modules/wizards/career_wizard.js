@@ -1,6 +1,7 @@
 import DSKUtility from "../system/dsk_utility.js";
 import ItemRulesDSK from "../system/item-rules.js";
 import WizardDSK from "./dsk_wizard.js"
+const { mergeObject, duplicate } = foundry.utils
 
 export default class CareerWizard extends WizardDSK {
     static get defaultOptions() {

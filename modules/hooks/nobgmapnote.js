@@ -9,10 +9,10 @@ export const initHook = () => {
     Note.prototype._drawControlIcon = function () {
         const noBG = this.document.getFlag("dsk", "noBG");
         let tint = Color.from(this.document.texture.tint || null);
-        const data = {texture: this.document.texture.src, size: this.size, tint}
+        const data = {texture: this.document.texture.src, size: this.document.iconSize, tint}
         let icon = noBG ? new TransparentControlIcon(data) : new ControlIcon(data);
-        icon.x -= (this.size / 2);
-        icon.y -= (this.size / 2);
+        icon.x -= (this.document.iconSize / 2);
+        icon.y -= (this.document.iconSize / 2);
         return icon;
     };
 }

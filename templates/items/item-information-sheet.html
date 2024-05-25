@@ -13,11 +13,7 @@
             <div class="form-group">
                 <label class="label-text">{{localize "TYPES.Item.skill"}}</label>
                 <select name="system.skill" data-dtype="String">
-                    {{#select system.skill}}
-                    {{#each allSkills as |ch|}}
-                    <option value="{{ch}}">{{ch}}</option>
-                    {{/each}}
-                    {{/select}}
+                    {{selectOptions (selfObj allSkills) selected=system.skill}}
                 </select>
             </div>
             <div class="form-group">

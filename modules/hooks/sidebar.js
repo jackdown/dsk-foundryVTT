@@ -1,3 +1,5 @@
+const { getProperty } = foundry.utils
+
 export function initSidebar(){
     Hooks.on("renderSettings", (app, html, data) => {
         let button = $(`<button id="reportADSKBug"><i class="fas fa-bug"></i> ${game.i18n.localize("dsk.DSKError.reportBug")}</button>`)

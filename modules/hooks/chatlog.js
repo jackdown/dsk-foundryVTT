@@ -5,6 +5,7 @@ import DSKChatListeners from '../system/chat_listeners.js';
 import DSKUtility from '../system/dsk_utility.js';
 import DSKStatusEffects from '../status/status_effects.js';
 import DialogReactDSK from '../dialog/dialog-react.js';
+const { getProperty } = foundry.utils
 
 export function initChatlogHooks() {
     Hooks.on('renderChatLog', (log, html, data) => {

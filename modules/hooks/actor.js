@@ -1,6 +1,7 @@
 import DSKActiveEffectConfig from "../status/active_effects.js"
 import AdvantageRulesDSK from "../system/advantage-rules.js"
 import DSKUtility from "../system/dsk_utility.js"
+const { hasProperty, getProperty, mergeObject } = foundry.utils
 
 export function initActorHooks() {
     

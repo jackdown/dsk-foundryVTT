@@ -1,5 +1,6 @@
 import DSKUtility from "./dsk_utility.js"
 import DSK from "./config.js"
+const { mergeObject } = foundry.utils
 
 let ADVANCEDFILTERS = {}
 

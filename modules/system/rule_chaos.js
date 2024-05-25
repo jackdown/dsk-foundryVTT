@@ -1,6 +1,7 @@
 
 import DSKUtility from "./dsk_utility.js";
 import SpecialabilityRulesDSK from "./specialability-rules.js";
+const { getProperty, mergeObject, setProperty } = foundry.utils
 
 export default class RuleChaos {
     static regex2h = /\(2H/;

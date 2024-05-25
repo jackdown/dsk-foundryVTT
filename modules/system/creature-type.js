@@ -1,4 +1,5 @@
 import DSKUtility from "./dsk_utility.js"
+const { getProperty } = foundry.utils
 
 Hooks.once("ready", async() => {
     if (!CreatureType.creatureData) {

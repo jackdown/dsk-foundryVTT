@@ -5,16 +5,7 @@
             {{#each characteristics as |item i|}}
             <div class="col five center" style="max-width: 16.66%;" data-tooltip="{{attrLoc item 'name'}}">
                 <select class="noAppearance" name="characteristics{{i}}">
-                    {{#select item}}
-                    <option value="mu"> {{localize 'dsk.characteristics.mu.abbr'}}</option>
-                    <option value="kl"> {{localize 'dsk.characteristics.kl.abbr'}}</option>
-                    <option value="in"> {{localize 'dsk.characteristics.in.abbr'}}</option>
-                    <option value="ch"> {{localize 'dsk.characteristics.ch.abbr'}}</option>
-                    <option value="ff"> {{localize 'dsk.characteristics.ff.abbr'}}</option>
-                    <option value="ge"> {{localize 'dsk.characteristics.ge.abbr'}}</option>
-                    <option value="ko"> {{localize 'dsk.characteristics.ko.abbr'}}</option>
-                    <option value="kk"> {{localize 'dsk.characteristics.kk.abbr'}}</option>
-                    {{/select}}
+                    {{selectOptions ../attributesList selected=item}}
                 </select>
             </div>
             {{/each}}

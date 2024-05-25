@@ -1,3 +1,5 @@
+const { getProperty } = foundry.utils
+
 export function setupScene() {
     Hooks.on('preCreateScene', function(doc, createData, options, userId) {
         if (!createData.grid?.units) doc.updateSource({ grid: { units: game.i18n.localize('dsk.gridUnits') }})

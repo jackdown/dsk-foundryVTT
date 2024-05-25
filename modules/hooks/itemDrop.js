@@ -1,6 +1,7 @@
 import DSKUtility from "../system/dsk_utility.js"
 import RuleChaos from "../system/rule_chaos.js"
 import DSK from "../system/config.js"
+const { getProperty } = foundry.utils
 
 export const dropToGround = async(sourceActor, item, data, amount) => {
     if (game.user.isGM) {
@@ -80,7 +81,7 @@ const handleItemDrop = async(canvas, data) => {
     new DropToGroundDialog({
         title: data.name,
         content,
-        default: 'yes',
+        default: 'Yes',
         buttons: {
             Yes: {
                 icon: '<i class="fa fa-check"></i>',

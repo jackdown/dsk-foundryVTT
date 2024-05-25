@@ -1,6 +1,7 @@
 import ActorDSK from "../actor/actor_dsk.js"
 import DSKUtility from "../system/dsk_utility.js"
 import OpposedDSK from "../system/opposeddsk.js"
+const { mergeObject } = foundry.utils
 
 export default class DialogReactDSK extends Dialog {
     static async showDialog(startMessage) {

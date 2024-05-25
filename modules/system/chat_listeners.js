@@ -1,10 +1,9 @@
-
-
 import { showPopout } from "../hooks/imagepopouttochat.js"
 import DSK from "./config.js"
 import DSKUtility from "./dsk_utility.js"
 import { showPatchViewer } from "./migrator.js"
 import RuleChaos from "./rule_chaos.js"
+const { duplicate } = foundry.utils
 
 export default class DSKChatListeners {
     static chatListeners(html) {
@@ -31,7 +30,7 @@ export default class DSKChatListeners {
 
     static postStatus(id) {
         let effect = CONFIG.statusEffects.find(x => x.id == id)
-        let msg = `<h2><a class="chat-condition chatButton" data-id="${id}"><img class="sender-image" style="background-color:black;margin-right: 8px;" src="${effect.icon}"/>${game.i18n.localize(effect.name)}</h2></a><p>${game.i18n.localize(effect.description)}</p>`
+        let msg = `<h2><a class="chat-condition chatButton" data-id="${id}"><img class="sender-image" style="background-color:black;margin-right: 8px;" src="${effect.img}"/>${game.i18n.localize(effect.name)}</h2></a><p>${game.i18n.localize(effect.description)}</p>`
         ChatMessage.create(DSKUtility.chatDataSetup(msg, "roll"))
     }
 
@@ -49,7 +48,7 @@ export default class DSKChatListeners {
             x.name = game.i18n.localize(x.name)
             return x
         }).sort((a, b) => { return a.name.localeCompare(b.name) })
-        let msg = effects.map(x => `<a class="chat-condition chatButton" data-id="${x.id}"><img src="${x.icon}"/>${x.name}</a>`).join(" ")
+        let msg = effects.map(x => `<a class="chat-condition chatButton" data-id="${x.id}"><img src="${x.img}"/>${x.name}</a>`).join(" ")
         ChatMessage.create(DSKUtility.chatDataSetup(msg, "roll"))
     }
 

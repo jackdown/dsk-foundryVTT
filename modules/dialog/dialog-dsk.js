@@ -2,7 +2,7 @@ import DSKCombatDialog from './dialog-combat-dsk.js'
 import DialogShared from './dialog-shared.js'
 import SkillDialogDSK from './dialog-skill-dsk.js'
 import DSKSpellDialog from './dialog-spell.js'
-
+const { mergeObject } = foundry.utils
 
 export default class DSKDialog extends DialogShared {
     static getDialogForItem(type) {

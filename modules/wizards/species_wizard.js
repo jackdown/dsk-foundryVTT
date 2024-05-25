@@ -1,5 +1,6 @@
 import WizardDSK from "./dsk_wizard.js"
 import DSK from "../system/config.js";
+const { mergeObject, duplicate } = foundry.utils
 
 export default class SpeciesWizard extends WizardDSK {
     static get defaultOptions() {

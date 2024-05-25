@@ -1,5 +1,6 @@
 import DSKUtility from "../system/dsk_utility.js";
 import WizardDSK from "./dsk_wizard.js"
+const { mergeObject, duplicate } = foundry.utils
 
 export default class CultureWizard extends WizardDSK {
 

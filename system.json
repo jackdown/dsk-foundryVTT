@@ -2,7 +2,7 @@
     "id": "dsk",
     "title": "Die Schwarze Katze/A Furry Tale",
     "description": "Das Rollenspiel Die Schwarze Katze spielt in Aventurien, in der Welt von Das Schwarze Auge. Jedoch schlüpfst du in die Rolle einer erwachten Katze und erlebst die Welt und Abenteuer aus einer ganz anderen Perspektive.",
-    "version": "2.2.1",
+    "version": "3.0.0",
     "authors": [{
         "name": "Plushtoast"
     },{
@@ -50,32 +50,26 @@
     "background": "systems/dsk/icons/githublogo.webp",
     "socket": true,
     "initiative": "@stats.ini.value + @stats.ini.die + (1d99 * 0.0001)",
-    "gridDistance": 1,
-    "gridUnits": "Schritt",
+    "grid": {
+        "distance": 1,
+        "units": "Schritt"
+    },
     "primaryTokenAttribute": "stats.LeP",
     "secondaryTokenAttribute": "stats.AeP",
     "compatibility": {
-        "minimum": "11.296",
-        "verified": "11",
-        "maximum": "11"
+        "minimum": "12",
+        "verified": "12",
+        "maximum": "12"
     },
     "url": "https://github.com/Plushtoast/dsk-foundryVTT",
     "manifest": "https://raw.githubusercontent.com/Plushtoast/dsk-foundryVTT/foundry11/system.json",
     "download": "https://github.com/Plushtoast/dsk-foundryVTT/releases/download/2.2.1/dsk-foundryVTT-2.2.1.zip",
-    "name": "dsk",
-    "minimumCoreVersion": "11",
     "packFolders": [
         {
-          "name": "Item",
+          "name": "Die Schwarze Katze",
           "sorting": "m",
           "packs": [
-            "default"
-          ]
-        },
-        {
-          "name": "RollTable",
-          "sorting": "m",
-          "packs": [
+            "default",
             "patzer"
           ]
         }

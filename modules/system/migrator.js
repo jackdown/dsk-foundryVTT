@@ -1,4 +1,5 @@
 import DSKUtility from "./dsk_utility.js"
+const { mergeObject } = foundry.utils
 
 async function setupDefaulTokenConfig() {
     if (!game.settings.get("dsk", "defaultConfigFinished")) {
@@ -40,7 +41,7 @@ export default function migrateWorld() {
         //betaWarning()
         await setupDefaulTokenConfig()
         const currentVersion = await game.settings.get("dsk", "migrationVersion")
-        const NEEDS_MIGRATION_VERSION = 26
+        const NEEDS_MIGRATION_VERSION = 27
         const needsMigration = currentVersion < NEEDS_MIGRATION_VERSION
 
         if (!needsMigration) return;

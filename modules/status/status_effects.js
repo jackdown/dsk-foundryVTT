@@ -1,5 +1,6 @@
 import DSKChatListeners from "../system/chat_listeners.js";
 import DSK from "../system/config.js";
+const { duplicate, getProperty } = foundry.utils
 
 export default class DSKStatusEffects{
     static bindButtons(html) {
@@ -26,14 +27,12 @@ export default class DSKStatusEffects{
 
         owner.addCondition({
             label,
-            icon: "icons/svg/aura.svg",
+            img: "icons/svg/aura.svg",
             origin: owner.uuid,
             flags: {
                 dsk: {
                     value: null,
-                    editable: true,
                     description,
-                    custom: true
                 }
             }
         })
@@ -218,10 +217,10 @@ export default class DSKStatusEffects{
           if(target.system.status[key]){
             const ef = DSK.statusEffects.find(x => x.id == key)
             cumulativeConditions.push({
-              icon: ef.icon,
-              id: key,
-              name: game.i18n.localize(ef.name),
-              value: target.system.status[key]
+                img: ef.img,
+                id: key,
+                name: game.i18n.localize(ef.name),
+                value: target.system.status[key]
             })
           }
         }

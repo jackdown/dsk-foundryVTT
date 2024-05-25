@@ -1,6 +1,7 @@
 import DSKUtility from "../system/dsk_utility.js";
 import DSKDialog from "./dialog-dsk.js";
 import DialogShared from "./dialog-shared.js";
+const { mergeObject, duplicate } = foundry.utils
 
 export default class DSKpellDialog extends DialogShared {
     static rollChanges = ["defenseMalus"]

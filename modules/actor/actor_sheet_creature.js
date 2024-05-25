@@ -1,4 +1,5 @@
 import ActorSheetDSK from "./actor_sheet_dsk.js";
+const { mergeObject, getProperty } = foundry.utils
 
 export default class ActorSheetCreature extends ActorSheetDSK{
     static get defaultOptions() {

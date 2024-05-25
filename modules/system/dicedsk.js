@@ -11,6 +11,7 @@ import DSKUtility from "./dsk_utility.js"
 import RequestRoll from "./request-roll.js"
 import SpecialabilityRulesDSK from "./specialability-rules.js"
 import TraitRulesDSK from "./trait_rules.js"
+const { mergeObject, deepClone, getProperty, duplicate } = foundry.utils
 
 export default class DiceDSK{
     static async rollTest(testData) {
@@ -82,6 +83,10 @@ export default class DiceDSK{
             hasSituationalModifiers: situationalModifiers.length > 0,
             situationalModifiers,
             rollMode: dialogOptions.data.rollMode || rollMode,
+            attributesList: ["mu", "kl", "in", "ch", "ff", "ge", "ko", "kk"].reduce((acc, att) => {
+                acc[att] = game.i18n.localize(`dsk.characteristics.${att}.abbr`)
+                return acc
+            } , {}),
             rollModes: CONFIG.Dice.rollModes,
             defenseCount: await this.getDefenseCount(testData),
             targets,
@@ -211,7 +216,7 @@ export default class DiceDSK{
                 let rollEffect = testData.damageRoll ? 
                     Roll.fromData(testData.damageRoll) : 
                     await DiceDSK.manualRolls(
-                        await new Roll(formula).evaluate({ async: true }),
+                        await new Roll(formula).evaluate(),
                         "dsk.CHAR.DAMAGE",
                         testData.extra.options
                     )
@@ -223,7 +228,7 @@ export default class DiceDSK{
                 )
                 res["calculatedEffectFormula"] = formula
                 for (let k of rollEffect.terms) {
-                    if (k instanceof Die || k.class == "Die")
+                    if (k instanceof foundry.dice.terms.Die || k.class == "Die")
                         for (let l of k.results)
                             res["characteristics"].push({ char: "effect", res: l.result, die: "d" + k.faces })
                 }
@@ -287,7 +292,7 @@ export default class DiceDSK{
         const regex = /\d{1}[dDwW]\d/g;
         const modText = `${text}`
         modText.replace(regex, function (match) {
-            promises.push(new Roll(match.replace(/[Ww]/, "d")).evaluate({ async: true }))
+            promises.push(new Roll(match.replace(/[Ww]/, "d")).evaluate())
         })
         const data = await Promise.all(promises)
         const rollString = modText.replace(regex, () => {
@@ -357,7 +362,7 @@ export default class DiceDSK{
         let damageRoll = testData.damageRoll
             ? Roll.fromData(testData.damageRoll)
             : await DiceDSK.manualRolls(
-                  await new Roll(rollFormula).evaluate({ async: true }),
+                  await new Roll(rollFormula).evaluate(),
                   "dsk.damage",
                   testData.extra.options
               )
@@ -365,7 +370,7 @@ export default class DiceDSK{
 
         let weaponroll = 0
         for (let k of damageRoll.terms) {
-            if (k instanceof Die || k.class == "Die") {
+            if (k instanceof foundry.dice.terms.Die || k.class == "Die") {
                 for (let l of k.results) {
                     weaponroll += Number(l.result)
                     result.characteristics.push({ char: "damage", res: l.result, die: "d" + k.faces })
@@ -449,7 +454,7 @@ export default class DiceDSK{
                         const effect = CONFIG.statusEffects.find((x) => x.id == split[1])
                         result.push(
                             `<a class="chat-condition chatButton" data-id="${effect.id}">
-                            <img src="${effect.icon}"/>${game.i18n.localize(effect.name)}
+                            <img src="${effect.img}"/>${game.i18n.localize(effect.name)}
                             </a>`
                         )
                     } else
@@ -473,7 +478,7 @@ export default class DiceDSK{
     }
 
     static async _roll2D20(testData) {
-        let roll = testData.roll ? Roll.fromData(testData.roll) : await new Roll("1d20+1d20").evaluate({ async: true })
+        let roll = testData.roll ? (testData.roll instanceof Roll ? testData.roll : Roll.fromData(testData.roll)) : await new Roll("1d20+1d20").evaluate()
         let description = []
         let successLevel = 0
 
@@ -520,7 +525,7 @@ export default class DiceDSK{
                 `${game.i18n.localize("dsk.LocalizedIDs.incompetent")} (${testData.source.name})`
             )
         ) {
-            let reroll = await new Roll("1d20").evaluate({ async: true })
+            let reroll = await new Roll("1d20").evaluate()
             let indexOfMinValue = res.reduce((iMin, x, i, arr) => (x < arr[iMin] ? i : iMin), 0)
             let oldValue = roll.terms[indexOfMinValue * 2].total
             fws += Math.max(res[indexOfMinValue], 0)
@@ -656,13 +661,13 @@ export default class DiceDSK{
 
         if (!rerenderMessage) {
             chatOptions["content"] = await renderTemplate(chatOptions.template, chatData)
-            return await ChatMessage.create(chatOptions, false)
+            return await ChatMessage.create(chatOptions)
         } else {
             const html = await renderTemplate(chatOptions.template, chatData)
                 //Seems to be a foundry bug, after edit inline rolls are not converted anymore
             const actor =
                 ChatMessage.getSpeakerActor(rerenderMessage.speaker) ||
-                game.users.get(rerenderMessage.user).character
+                game.users.get(rerenderMessage.author).character
             const rollData = actor ? actor.getRollData() : {}
             const enriched = await TextEditor.enrichHTML(html, {rollData, async: true})
             chatOptions["content"] = enriched
@@ -735,7 +740,7 @@ export default class DiceDSK{
                 let form
                 let dice = []
                 for (let term of roll.terms) {
-                    if (term instanceof Die || term.class == "Die") {
+                    if (term instanceof foundry.dice.terms.Die || term.class == "Die") {
                         for (let res of term.results) {
                             dice.push({ faces: term.faces, val: res.result })
                         }
@@ -964,7 +969,7 @@ export default class DiceDSK{
                 case "char":
                 case "ahnengabe":
                 case "skill":
-                    roll = await new Roll(`1d20+1d20`).evaluate({ async: true })
+                    roll = await new Roll(`1d20+1d20`).evaluate()
 
                     mergeObject(roll.dice[0].options, d3dColors(testData.source.system.characteristic1))
                     mergeObject(roll.dice[1].options, d3dColors(testData.source.system.characteristic2))
@@ -975,7 +980,7 @@ export default class DiceDSK{
                     if (testData.regenerateLeP ) leDie.push("1d6")
                     if (testData.extra.actor.isMage && testData.regenerateAeP) leDie.push("1d6")
 
-                    roll = await new Roll(leDie.join("+")).evaluate({ async: true })
+                    roll = await new Roll(leDie.join("+")).evaluate()
                     if (testData.regenerateLeP ) mergeObject(roll.dice[0].options, d3dColors("mu"))
                     if (testData.extra.actor.isMage && testData.regenerateAeP) mergeObject(roll.dice[leDie.length - 1].options, d3dColors("ge"))
                     break
@@ -984,10 +989,10 @@ export default class DiceDSK{
                 case "combatskill":
                     if (testData.mode == "damage") {
                         let rollFormula = await this.damageFormula(testData)
-                        roll = await new Roll(rollFormula).evaluate({ async: true })
+                        roll = await new Roll(rollFormula).evaluate()
                         for (let i = 0; i < roll.dice.length; i++) mergeObject(roll.dice[i].options, d3dColors("damage"))
                     } else {
-                        roll = await new Roll(`1d20+1d20`).evaluate({ async: true })
+                        roll = await new Roll(`1d20+1d20`).evaluate()
                         mergeObject(roll.dice[0].options, d3dColors("attack"))
                         mergeObject(roll.dice[1].options, d3dColors("attack"))
                     }
@@ -995,10 +1000,10 @@ export default class DiceDSK{
                 case "trait":
                     if (testData.mode == "damage") {
                         let rollFormula = await this.damageFormula(testData)
-                        roll = await new Roll(rollFormula).evaluate({ async: true })
+                        roll = await new Roll(rollFormula).evaluate()
                         for (let i = 0; i < roll.dice.length; i++) mergeObject(roll.dice[i].options, d3dColors("damage"))
                     } else {
-                        roll = await new Roll(`1d20+1d20`).evaluate({ async: true })
+                        roll = await new Roll(`1d20+1d20`).evaluate()
                         mergeObject(roll.dice[0].options, d3dColors("attack"))
                         mergeObject(roll.dice[1].options, d3dColors("attack"))
                     }
@@ -1006,7 +1011,7 @@ export default class DiceDSK{
                 case "poison":
                 case "disease":
                     let pColor = d3dColors("in")
-                    roll = await new Roll(`1d20+1d20`).evaluate({ async: true })
+                    roll = await new Roll(`1d20+1d20`).evaluate()
                     mergeObject(roll.dice[0].options, pColor)
                     mergeObject(roll.dice[1].options, pColor)
                     break
@@ -1070,7 +1075,7 @@ export default class DiceDSK{
         let damage = roll.total + modifiers
 
         for (let k of roll.terms) {
-            if (k instanceof Die || k.class == "Die") {
+            if (k instanceof foundry.dice.terms.Die || k.class == "Die") {
                 for (let l of k.results) chars.push({ char: testData.mode, res: l.result, die: "d" + k.faces })
             }
         }
@@ -1092,7 +1097,7 @@ export default class DiceDSK{
 
         let data = message.flags.data
         let newTestData = data.preData
-        newTestData.extra.actor = DSKUtility.getSpeaker(newTestData.extra.speaker).toObject(false)
+        newTestData.extra.actor = DSKUtility.getSpeaker(newTestData.extra.speaker)?.toObject(false)
         if(newTestData.extra.options.cheat) delete newTestData.extra.options.cheat
         let index
 
@@ -1124,12 +1129,14 @@ export default class DiceDSK{
                 break
         }
 
+        if(data.postData.damageRoll && !newTestData.damageRoll) newTestData.damageRoll = data.postData.damageRoll
+
         let chatOptions = {
             template: data.template,
             rollMode: data.rollMode,
             title: data.title,
             speaker: message.speaker,
-            user: message.user.id,
+            user: message.author.id,
         }
 
         if (["gmroll", "blindroll"].includes(chatOptions.rollMode))
@@ -1138,7 +1145,7 @@ export default class DiceDSK{
         if (chatOptions.rollMode === "blindroll") chatOptions["blind"] = true
 
         if (["poison", "disease"].includes(newTestData.source.type)) {
-            new ItemDSK(newTestData.source, { temporary: true })[`${data.postData.postFunction}`](
+            new ItemDSK(newTestData.source)[`${data.postData.postFunction}`](
                 { testData: newTestData, cardOptions: chatOptions },
                 { rerenderMessage: message }
             )

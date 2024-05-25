@@ -1,4 +1,5 @@
 import { DSKCombatTracker } from "../hooks/combat_tracker.js";
+const { mergeObject, duplicate } = foundry.utils
 
 export default class DSKIniTracker extends Application {
     static get defaultOptions() {
@@ -23,7 +24,7 @@ export default class DSKIniTracker extends Application {
         if (!el.style.width || width) {
             const tarW = width || el.offsetWidth;
             const maxW = el.style.maxWidth || window.innerWidth;
-            currentPosition.width = width = Math.clamped(tarW, 0, maxW);
+            currentPosition.width = width = Math.clamp(tarW, 0, maxW);
             el.style.width = width + "px";
             if ((width + currentPosition.left) > window.innerWidth) left = currentPosition.left;
         }

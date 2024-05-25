@@ -3,6 +3,7 @@ import ItemDSK from "../item/item_dsk.js";
 import DSKActiveEffectConfig from "../status/active_effects.js";
 import DiceDSK from "./dicedsk.js";
 import DSKUtility from "./dsk_utility.js";
+const { getProperty } = foundry.utils
 
 export default class OpposedDSK{
     static async handleOpposedTarget(message) {
@@ -188,7 +189,7 @@ export default class OpposedDSK{
                 return
             }
             let item = attackerToken.actor.items.get(attacker.testResult.source._id)
-            if (!item) item = new ItemDSK(attacker.testResult.source, { temporary: true })
+            if (!item) item = new ItemDSK(attacker.testResult.source)
             if (!item) return
 
             const targets = [defenderToken]

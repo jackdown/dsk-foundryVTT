@@ -12,6 +12,7 @@ import AdvantageRulesDSK from "../system/advantage-rules.js"
 import SpecialabilityRulesDSK from "../system/specialability-rules.js"
 import ActorDSK from "./actor_dsk.js";
 import { itemFromDrop } from "../system/view_helper.js";
+const { mergeObject, getProperty, duplicate } = foundry.utils
 
 export default class ActorSheetDSK extends ActorSheet {
     async _render(force = false, options = {}) {
@@ -27,11 +28,7 @@ export default class ActorSheetDSK extends ActorSheet {
             ".close": "dsk.SHEET.Close",
             ".configure-sheet": "dsk.SHEET.Configure",
             ".configure-token": "dsk.SHEET.Token",
-            ".import": "dsk.SHEET.Import",
-            ".locksheet": "dsk.SHEET.Lock",
-            ".library": "dsk.SHEET.Library",
-            ".playerview": "dsk.SHEET.switchLimited",
-            ".actorConfig": "dsk.SHEET.actorConfig"
+            ".import": "dsk.SHEET.Import"
         }
         for(let key of Object.keys(tooltips)){
             elem.find(key).attr("data-tooltip", game.i18n.localize(tooltips[key]));    
@@ -122,6 +119,7 @@ export default class ActorSheetDSK extends ActorSheet {
 
     async getData(options) {
         const baseData = await super.getData(options);
+        this.wrapperLocked = false
         const sheetData = { actor: baseData.actor, editable: baseData.editable, limited: baseData.limited, owner: baseData.owner }
         sheetData["prepare"] = this.actor.prepareSheet({ details: this.openDetails })
         sheetData["sizeCategories"] = DSK.sizeCategories
@@ -149,11 +147,13 @@ export default class ActorSheetDSK extends ActorSheet {
         buttons.unshift({
             class: "library",
             icon: `fas fa-university`,
+            tooltip: "dsk.SHEET.Library",
             onclick: async () => this._openLibrary()
         })
         if (this.actor.isOwner) {
             buttons.unshift({
                 class: "actorConfig",
+                tooltip: "dsk.SHEET.actorConfig",
                 icon: `fas fa-link`,
                 onclick: async () => this._configActor()
             })
@@ -161,6 +161,7 @@ export default class ActorSheetDSK extends ActorSheet {
         if (this.actor.system.canAdvance) {
             buttons.unshift({
                 class: "locksheet",
+                tooltip: "dsk.SHEET.Lock",
                 icon: `fas fa-${this.actor.system.sheetLocked ? "" : "un"}lock`,
                 onclick: async ev => this._changeAdvanceLock(ev)
             })
@@ -318,12 +319,12 @@ export default class ActorSheetDSK extends ActorSheet {
                     let text
                     if (descriptor) {
                         effect = CONFIG.statusEffects.find(x => x.id == descriptor)
-                        text = $(`<div style="padding:5px;"><b><a class="chat-condition chatButton" data-id="${effect.id}"><img src="${effect.icon}"/>${game.i18n.localize(effect.name)}</a></b>: ${game.i18n.localize(effect.description)}</div>`)
+                        text = $(`<div style="padding:5px;"><b><a class="chat-condition chatButton" data-id="${effect.id}"><img src="${effect.img}"/>${game.i18n.localize(effect.name)}</a></b>: ${game.i18n.localize(effect.description)}</div>`)
                     } else {
                         //search temporary effects
                         effect = this.actor.effects.find(x => x.id == id)
                         if (effect) {
-                            text = $(`<div style="padding:5px;"><b><a class="chat-condition chatButton" data-id="${effect.id}"><img src="${effect.icon}"/>${game.i18n.localize(effect.name)}</a></b>: ${game.i18n.localize(effect.flags.dsk.description)}</div>`)
+                            text = $(`<div style="padding:5px;"><b><a class="chat-condition chatButton" data-id="${effect.id}"><img src="${effect.img}"/>${game.i18n.localize(effect.name)}</a></b>: ${game.i18n.localize(effect.flags.dsk.description)}</div>`)
                         }
                     }
                     const elem = $(ev.currentTarget).closest('.groupbox').find('.effectDescription')
@@ -468,12 +469,11 @@ export default class ActorSheetDSK extends ActorSheet {
     }
 
     async advanceWrapper(ev, funct, param) {
-        const i = $(ev.currentTarget).find('i')
-        if (!i.hasClass("fa-spin")) {
-            i.addClass("fa-spin fa-spinner")
-            await this[funct](param)
-            i.removeClass("fa-spin fa-spinner")
-        }
+        if(this.wrapperLocked) return
+
+        this.wrapperLocked = true
+        $(ev.currentTarget).find('i').addClass("fa-spin fa-spinner")
+        await this[funct](param)
     }
 
     async _advanceAttribute(attr) {

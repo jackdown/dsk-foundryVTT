@@ -1,3 +1,5 @@
+const { getProperty } = foundry.utils
+
 export default class DPS {
     static rangeFinder(tokenSource, tokenTarget) {
         const gridSize = canvas.scene.grid.size

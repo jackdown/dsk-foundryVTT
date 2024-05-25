@@ -1,6 +1,7 @@
 import ActorDSK from "../actor/actor_dsk.js";
 import DSKUtility from "../system/dsk_utility.js";
 import { ActAttackDialog } from "../dialog/dialog-react.js"
+const { getProperty, mergeObject } = foundry.utils
 
 export class DSKCombatTracker extends CombatTracker {
     static get defaultOptions() {
@@ -57,13 +58,9 @@ export class DSKCombatTracker extends CombatTracker {
             }
 
             turn.effects = new Set();
-            if (combatant.token) {
-                combatant.token.effects.forEach(e => turn.effects.add(e));
-                if (combatant.token.overlayEffect) turn.effects.add(combatant.token.overlayEffect);
-            }
             if (combatant.actor) combatant.actor.temporaryEffects.forEach(e => {
                 if (e.statuses.has(CONFIG.Combat.defeatedStatusId)) turn.defeated = true;
-                else if (e.icon && isAllowedToSeeEffects && !e.notApplicable && (game.user.isGM || !e.getFlag("dsk", "hidePlayers")) && !e.getFlag("dsk", "hideOnToken")) turn.effects.add(e.icon);
+                else if (e.img && isAllowedToSeeEffects && !e.notApplicable && (game.user.isGM || !e.getFlag("dsk", "hidePlayers")) && !e.getFlag("dsk", "hideOnToken")) turn.effects.add(e.img);
             })
         }
         return data
@@ -211,7 +208,7 @@ class RepeatingEffectsHelper {
             for (const ef of turn.actor.system.repeatingEffects.startOfRound[attr]){
                 if(getProperty(turn.actor.system.repeatingEffects, `disabled.${attr}`)) continue
 
-                const damageRoll = await new Roll(ef.value).evaluate({ async: true })
+                const damageRoll = await new Roll(ef.value).evaluate()
                 const damage = await damageRoll.render()
                 const type = game.i18n.localize(damageRoll.total > 0 ? "dsk.CHATNOTIFICATION.regenerates" : "dsk.CHATNOTIFICATION.getsHurt")
                 const applyDamage = `${turn.actor.name} ${type} ${game.i18n.localize(attr)} ${damage}`
@@ -236,7 +233,7 @@ class RepeatingEffectsHelper {
         const step = Number(effect.getFlag("dsk", "value"))
         const protection = DSKStatusEffects.resistantToEffect(turn.actor, effect)
         const die =  { 0: "1", 1: "1d3", 2: "1d6", 3: "2d6" }[step - protection] || "1"
-        const damageRoll = await new Roll(die).evaluate({ async: true })
+        const damageRoll = await new Roll(die).evaluate()
         const damage = await damageRoll.render()
 
         await ChatMessage.create(DSKUtility.chatDataSetup(game.i18n.format(`dsk.CHATNOTIFICATION.burning.${step}`, { actor: turn.actor.name, damage })))

@@ -6,6 +6,7 @@ import SpecialabilityRulesDSK from "../system/specialability-rules.js";
 import { svgAutoFit } from "../system/view_helper.js";
 import { ItemSheetObfuscation } from "./obfuscatemixin.js";
 import { itemFromDrop } from "../system/view_helper.js";
+const { mergeObject, getProperty } = foundry.utils
 
 export default class ItemSheetDSK extends ItemSheet {
     static setupSheets(){
@@ -64,6 +65,7 @@ export default class ItemSheetDSK extends ItemSheet {
 
     async getData(options) {
         let data = super.getData(options).data;
+        this.wrapperLocked = false
         mergeObject(data, {
             isOwned: this.item.actor,
             editable: this.isEditable,
@@ -77,13 +79,11 @@ export default class ItemSheetDSK extends ItemSheet {
     }
 
     async advanceWrapper(ev, funct) {
-        let elem = $(ev.currentTarget)
-        let i = elem.find('i')
-        if (!i.hasClass("fa-spin")) {
-            i.addClass("fa-spin fa-spinner")
-            await this[funct]()
-            i.removeClass("fa-spin fa-spinner")
-        }
+        if(this.wrapperLocked) return
+
+        this.wrapperLocked = true
+        $(ev.currentTarget).find('i').addClass("fa-spin fa-spinner")        
+        await this[funct]()
     }
 
     activateListeners(html) {
@@ -183,9 +183,12 @@ class ItemSheetInformation extends ItemSheetDSK {
 class ItemSheetConsumable extends ItemSheetObfuscation(ItemSheetDSK) {
     async getData(options) {
         const data = await super.getData(options)
-
         mergeObject(data, {
-            calculatedPrice: game.dsk.config.ItemSubClasses.consumable.consumablePrice(this.item)
+            calculatedPrice: game.dsk.config.ItemSubClasses.consumable.consumablePrice(this.item),
+            qsOptions: Array.fromRange(3, 0).reduce((acc, x) => { acc[x] = game.i18n.localize(`dsk.consumable.qs.${x}`); return acc }, {}),
+            categoryOptions: {
+                "0": 'dsk.consumable.category.0'
+            }
         })
         return data
     }

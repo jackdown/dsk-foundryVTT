@@ -61,5 +61,5 @@ export function conditionsMatcher(match){
     const elem = parts.shift()
     parts = parts.join(" ")
     const cond = DSK.statusEffects[DSK.statusRegex.effects.indexOf(parts.toLowerCase())]
-    return `<span>${elem} <a class="chatButton chat-condition" data-id="${cond.id}"><img src="${cond.icon}"/>${parts}</a></span>`
+    return `<span>${elem} <a class="chatButton chat-condition" data-id="${cond.id}"><img src="${cond.img}"/>${parts}</a></span>`
 }

@@ -1,10 +1,12 @@
+const { mergeObject } = foundry.utils
+
 export default class Migrakel {
     static async showDialog(content) {
         let [result] = await new Promise((resolve, reject) => {
             new Dialog({
                 title: game.i18n.localize("dsk.Migrakel.Migration"),
                 content,
-                default: "yes",
+                default: "Yes",
                 buttons: {
                     Yes: {
                         icon: '<i class="fa fa-check"></i>',

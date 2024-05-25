@@ -1,7 +1,7 @@
 import DSKUtility from "./../system/dsk_utility.js"
 import DSK from "./../system/config.js"
 import DiceDSK from "../system/dicedsk.js";
-
+const { mergeObject, getProperty, duplicate, setProperty } = foundry.utils
 
 function automatedAnimation(successLevel, options = {}) {
     if (DSKUtility.moduleEnabled("autoanimations")) {

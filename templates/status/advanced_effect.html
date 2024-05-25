@@ -19,11 +19,7 @@
     <div class="form-group">
         <label class="label-text">{{localize "dsk.ActiveEffects.custom"}}</label>
         <select class="advancedSelector" name="flags.dsk.advancedFunction" data-dtype="String">
-            {{#select effect.flags.dsk.advancedFunction}}
-            {{#each advancedFunctions as |item i|}}
-            <option value="{{item.index}}">{{localize item.name}}</option>
-            {{/each}}
-            {{/select}}
+            {{selectOptions advancedFunctions selected=effect.flags.dsk.advancedFunction localize=true valueAttr="index" labelAttr="name"}}
         </select>
     </div>
     <div class="form-group">

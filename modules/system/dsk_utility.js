@@ -1,6 +1,7 @@
 import ActorDSK from "../actor/actor_dsk.js";
 import { conditionsMatcher } from "../hooks/texteditor.js";
 import DSK from "./config.js";
+const { duplicate, mergeObject } = foundry.utils
 
 export default class DSKUtility {
     static chatDataSetup(content, modeOverride, forceWhisper) {
@@ -145,7 +146,7 @@ export default class DSKUtility {
             attrs = [attrs, attrs, attrs, attrs, attrs, attrs, attrs, attrs]
         }
 
-        const actor = await ActorDSK.create({
+        const actor = new ActorDSK({
             name: "Alricat",
             type: "npc",
             items: [],
@@ -163,7 +164,7 @@ export default class DSKUtility {
                 },
 
             }
-        }, { temporary: true, noHook: true })
+        }, { noHook: true })
         actor.prepareData()
         return actor
     }
@@ -220,7 +221,7 @@ export default class DSKUtility {
                 sorting: sorting || (documentType == "JournalEntry" ? "a" : "m"),
                 color,
                 sort,
-                parent
+                folder: parent
             })
         }
         return folder

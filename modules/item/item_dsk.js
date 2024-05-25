@@ -9,6 +9,7 @@ import RuleChaos from "../system/rule_chaos.js"
 import SpecialabilityRulesDSK from "../system/specialability-rules.js"
 import DPS from "../system/derepositioningsystem.js"
 import CreatureType from "../system/creature-type.js"
+const { duplicate, mergeObject, getProperty } = foundry.utils
 
 export default class ItemDSK extends Item{
     static defaultImages(type, subtype = ""){
@@ -97,13 +98,17 @@ export default class ItemDSK extends Item{
         if (!SpecialabilityRulesDSK.hasAbility(actor, game.i18n.localize("dsk.LocalizedIDs.extremeShot"))) delete rangeOptions["extreme"]
         const drivingArcher = SpecialabilityRulesDSK.hasAbility(actor, game.i18n.localize("dsk.LocalizedIDs.drivingArcher"))
         const mountedOptions = drivingArcher ? duplicate(DSK.drivingArcherOptions) : duplicate(DSK.mountedRangeOptions)
+        let finalMountedOptions = {}
+        for(let key of Object.keys(mountedOptions)){
+            finalMountedOptions[`${game.i18n.localize('mountedRangeOptions.' + key)} (${mountedOptions[key]})`] = mountedOptions[key]
+        }
 
         mergeObject(data, {
             rangeOptions,
             rangeDistance: Object.keys(rangeOptions)[DPS.distanceModifier(game.canvas.tokens.get(tokenId), source, currentAmmo)],
             sizeOptions: DSK.rangeSizeCategories,
             visionOptions: DSK.rangeVision,
-            mountedOptions,
+            mountedOptions: finalMountedOptions,
             shooterMovementOptions: DSK.shooterMovementOptions,
             targetMovementOptions: DSK.targetMomevementOptions,
             targetSize,
@@ -124,28 +129,28 @@ export default class ItemDSK extends Item{
         return DSKStatusEffects.hasCondition(this, conditionKey)
     }
 
-    static async _onCreateDocuments(documents, context) {
+    static async _onCreateOperation(documents, operation, user) {
         for(let doc of documents) {
             if(doc.actor)
                 await ActorDSK.postUpdateConditions(doc.actor)
         }
-        return super._onCreateDocuments(documents, context);
+        return super._onCreateOperation(documents, operation, user);
       }
 
-    static async _onUpdateDocuments(documents, context) {
+    static async _onUpdateOperation(documents, operation, user) {
         for(let doc of documents) {
             if(doc.actor)
                 await ActorDSK.postUpdateConditions(doc.actor)
         }
-        return super._onUpdateDocuments(documents, context);
+        return super._onUpdateOperation(documents, operation, user);
     }
 
-    static async _onDeleteDocuments(documents, context) {
+    static async _onDeleteOperation(documents, operation, user) {
         for(let doc of documents) {
             if(doc.actor)
                 await ActorDSK.postUpdateConditions(doc.actor)
         }
-        return super._onDeleteDocuments(documents, context);
+        return super._onDeleteOperation(documents, operation, user);
     }
 
     static prepareMeleeAttack(situationalModifiers, actor, data, source, combatskills, wrongHandDisabled) {

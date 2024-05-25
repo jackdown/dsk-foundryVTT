@@ -8,11 +8,7 @@
         </div>
         <div class="col seventy">
             <select name="entryselection">
-                {{#select "-"}}
-                {{#each items as |itm i|}}
-                <option value="{{itm.name}}">{{itm.name}}</option>
-                {{/each}}
-                {{/select}}
+                {{selectOptions items selected="-" valueAttr="name" labelAttr="name"}}
             </select>
         </div>
     </div>

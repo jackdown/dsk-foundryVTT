@@ -1,4 +1,5 @@
 import DSKUtility from "../system/dsk_utility.js";
+const { mergeObject } = foundry.utils
 
 export function initDSN() {
     Hooks.once('init', () => {

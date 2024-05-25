@@ -2,6 +2,7 @@ import AdvantageRulesDSK from "../system/advantage-rules.js"
 import DSKUtility from "../system/dsk_utility.js"
 import ItemRulesDSK from "../system/item-rules.js"
 import SpecialabilityRulesDSK from "../system/specialability-rules.js"
+const { mergeObject, duplicate, getProperty } = foundry.utils
 
 export default class WizardDSK extends Application {
     

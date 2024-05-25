@@ -1,5 +1,6 @@
 import DPS from "../system/derepositioningsystem.js"
 import DSKUtility from "../system/dsk_utility.js"
+const { mergeObject } = foundry.utils
 
 export class AddTargetDialog extends Dialog{
     static async getDialog(speaker){
@@ -22,8 +23,7 @@ export class AddTargetDialog extends Dialog{
         return new AddTargetDialog({
             title: game.i18n.localize("dsk.DIALOG.addTarget"),
             content: await renderTemplate('systems/dsk/templates/dialog/addTarget-dialog.html', { selectables }),
-            default: "yes",
-                buttons: {},
+            buttons: {},
         })
     }
 
@@ -83,7 +83,6 @@ export class SelectUserDialog extends Dialog{
         return new SelectUserDialog({
             title: game.i18n.localize("dsk.DIALOG.setTargetToUser"),
             content: await renderTemplate('systems/dsk/templates/dialog/selectForUserDialog.html', { users }),
-            default: "yes",
             buttons: {},
         })
     }
@@ -125,7 +124,7 @@ export class UserMultipickDialog extends Dialog{
         new UserMultipickDialog({
             title: game.i18n.localize("dsk.SHEET.PostItem"),
             content: await renderTemplate('systems/dsk/templates/dialog/usermultipickdialog.html', { users }),
-            default: "yes",
+            default: "Yes",
             buttons: {
                 Yes: {
                     icon: '<i class="fa fa-check"></i>',

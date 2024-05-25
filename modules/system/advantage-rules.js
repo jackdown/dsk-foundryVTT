@@ -1,5 +1,6 @@
 import ItemRulesDSK from "./item-rules.js"
 import DSK from "./config.js"
+const { duplicate } = foundry.utils
 
 export default class AdvantageRulesDSK extends ItemRulesDSK {
     static setupFunctions() {}

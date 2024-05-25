@@ -1,6 +1,7 @@
 import DSK from "../system/config.js"
 import DSKUtility from "../system/dsk_utility.js"
 import OnUseEffect from "../system/onUseEffects.js"
+const { getProperty, mergeObject } = foundry.utils
 
 export default class DSKTables {
     static async showBotchCard(dataset, options = {}) {
@@ -100,7 +101,7 @@ export default class DSKTables {
     }
 
     static async defaultBotch() {
-        return ", " + game.i18n.localize("dsk.selfDamage") + (await new Roll("1d6+2").evaluate({ async: true })).total
+        return ", " + game.i18n.localize("dsk.selfDamage") + (await new Roll("1d6+2").evaluate()).total
     }
 
     static defaultAttackCrit(confirmed) {

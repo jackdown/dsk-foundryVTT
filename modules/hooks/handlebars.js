@@ -38,5 +38,6 @@ export function setupHandlebars(){
             }
             return res
         },
+        selfObj: (a) => { return a.reduce((acc, val) => { acc[val] = val; return acc }, {}) }
     })
 }
