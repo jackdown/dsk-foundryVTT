@@ -62,8 +62,8 @@
         "maximum": "12"
     },
     "url": "https://github.com/Plushtoast/dsk-foundryVTT",
-    "manifest": "https://raw.githubusercontent.com/Plushtoast/dsk-foundryVTT/foundry11/system.json",
-    "download": "https://github.com/Plushtoast/dsk-foundryVTT/releases/download/2.2.1/dsk-foundryVTT-2.2.1.zip",
+    "manifest": "https://raw.githubusercontent.com/Plushtoast/dsk-foundryVTT/foundry12/system.json",
+    "download": "https://github.com/Plushtoast/dsk-foundryVTT/releases/download/3.0.0/dsk-foundryVTT-3.0.0.zip",
     "packFolders": [
         {
           "name": "Die Schwarze Katze",
