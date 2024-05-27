@@ -186,7 +186,7 @@ class ItemSheetConsumable extends ItemSheetObfuscation(ItemSheetDSK) {
         mergeObject(data, {
             calculatedPrice: game.dsk.config.ItemSubClasses.consumable.consumablePrice(this.item),
             qsOptions: Array.fromRange(3, 0).reduce((acc, x) => { acc[x] = game.i18n.localize(`dsk.consumable.qs.${x}`); return acc }, {}),
-            categoryOptions: {
+            consumableCategories: {
                 "0": 'dsk.consumable.category.0'
             }
         })

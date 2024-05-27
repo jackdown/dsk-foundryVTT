@@ -18,7 +18,7 @@ export function initTokenHook() {
                 promises.push(this._drawOverlay(effect.img, effect.tint));
                 hasOverlay = true;
             }
-            else promises.push(this._drawEffect(effect.img, effect.tint, getProperty(effect, "flags.dsa5.value")));
+            else promises.push(this._drawEffect(effect.img, effect.tint, getProperty(effect, "flags.dsk.value")));
         }
         await Promise.allSettled(promises);
 
@@ -52,7 +52,7 @@ export function initTokenHook() {
             bg.drawRoundedRect(effect.x + 1, effect.y + 1, w - 2, w - 2, 2);
 
             if(effect.counter > 1 && !effect.counterDrawn){
-                let textEffect = game.dsa5.config.effectTextStyle
+                let textEffect = game.dsk.config.effectTextStyle
                 let color = game.settings.get("dsk", "statusEffectCounterColor")
                 textEffect._fill = /^#[0-9A-F]+$/.test(color) ? color : "#000000"
                 let text = this.effects.addChild(new PreciseText(effect.counter, textEffect))

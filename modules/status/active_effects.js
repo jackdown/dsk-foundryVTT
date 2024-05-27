@@ -52,7 +52,7 @@ export default class DSKActiveEffectConfig extends ActiveEffectConfig {
     }
 
     static async onEffectRemove(actor, effect) {
-        const onRemoveMacro = getProperty(effect, "flags.dsa5.onRemove");
+        const onRemoveMacro = getProperty(effect, "flags.dsk.onRemove");
         if (onRemoveMacro) {
             if (!game.user.can("MACRO_SCRIPT")) {
                 ui.notifications.warn(`You are not allowed to use JavaScript macros.`);
@@ -160,7 +160,7 @@ export default class DSKActiveEffectConfig extends ActiveEffectConfig {
                     } else {
                         try {
                             const syncFunction = Object.getPrototypeOf(function(){}).constructor
-                            const fn = new syncFunction("ef", "callMacro", "actor", "msg", "source", getProperty(ef, "flags.dsa5.args3"))
+                            const fn = new syncFunction("ef", "callMacro", "actor", "msg", "source", getProperty(ef, "flags.dsk.args3"))
                             fn.call(this, ef, callMacro, actor, msg, source);
                         } catch (err) {
                             ui.notifications.error(
@@ -232,7 +232,7 @@ export default class DSKActiveEffectConfig extends ActiveEffectConfig {
                                 } else {
                                     try {
                                         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor
-                                        const fn = new AsyncFunction("effect", "actor", "callMacro", "msg", "source", "actor", "sourceActor", "testData", "qs", getProperty(ef, "flags.dsa5.args3"))
+                                        const fn = new AsyncFunction("effect", "actor", "callMacro", "msg", "source", "actor", "sourceActor", "testData", "qs", getProperty(ef, "flags.dsk.args3"))
                                         await fn.call(this, ef, actor, callMacro, msg, source, actor, sourceActor, testData, qs);
                                     } catch (err) {
                                         ui.notifications.error(

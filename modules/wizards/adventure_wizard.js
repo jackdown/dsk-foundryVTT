@@ -1,8 +1,10 @@
 import { bindImgToCanvasDragStart } from "../hooks/imgTileDrop.js"
+import { increaseFontSize } from "../hooks/journal.js"
 import DSKStatusEffects from "../status/status_effects.js"
 import DSKChatAutoCompletion from "../system/chat_autocompletion.js"
 import DSKUtility from "../system/dsk_utility.js"
 import { slist } from "../system/view_helper.js"
+import DSK from "../system/config.js"
 const { mergeObject, duplicate } = foundry.utils
 
 export default class BookWizard extends Application {
@@ -13,6 +15,8 @@ export default class BookWizard extends Application {
         this.adventures = []
         this.books = []
         this.rshs = []
+        this.manuals = []
+        this.fulltextsearch = true
     }
 
     static get defaultOptions() {
@@ -22,6 +26,7 @@ export default class BookWizard extends Application {
             classes: options.classes.concat(["dsk", "largeDialog", "noscrollWizard", "bookWizardsheet", "dskjournalbrowser"]),
             width: 800,
             height: 880,
+            scrollY: [".pages-list .scrollable"],
             template: 'systems/dsk/templates/wizard/adventure/adventure_wizard.html',
             title: game.i18n.localize("dsk.Book.Wizard"),
             resizable: true,
@@ -38,20 +43,27 @@ export default class BookWizard extends Application {
         Hooks.on("renderJournalDirectory", (app, html) => {
             let div = $('<div class="header-actions action-buttons flexrow"></div>')
             let button = $(`<button id="openJournalBrowser"><i class="fa fa-book"></i>${game.i18n.localize("dsk.Book.Wizard")}</button>`)
-            button.click(() => { BookWizard.wizard.render(true) })
+            button.on('click', () => { BookWizard.wizard.render(true) })
             div.append(button)
-            html.find(".header-actions:first-child").after(div)            
+            html.find(".header-actions:first-child").after(div)
         })
-    }
+    } 
 
     _getHeaderButtons() {
         let buttons = super._getHeaderButtons();
+        buttons.unshift({
+            class: "increaseFontSize",
+            tooltip: "dsk.SHEET.increaseFontSize",
+            icon: "fas fa-arrows-up-down",
+            onclick: async () => increaseFontSize($(this._element).find('.chapter'))
+        })
+
         buttons.unshift({
             label: "Library",
             class: "library",
             tooltip: "dsk.Book.home",
             icon: `fas fa-book`,
-            onclick: async ev => this._showBooks()
+            onclick: async () => this._showBooks()
         })
         return buttons
     }
@@ -67,7 +79,10 @@ export default class BookWizard extends Application {
         this.content = undefined
         this.journalIndex = null
         this.fulltextsearch = true
+        this.searchString = undefined
         this.currentType = undefined
+        this.pageTocs = undefined
+        this.selectedSubChapter = undefined
         this.loadPage(this._element)
     }
 
@@ -89,7 +104,7 @@ export default class BookWizard extends Application {
                 PLAYER: visibility,
                 TRUSTED: visibility
             }}
-            
+
             await pack.configure(ownership)
         }
         this.render()
@@ -110,31 +125,46 @@ export default class BookWizard extends Application {
         })
 
         html.on("search keyup", ".filterJournals", ev => {
-            this.filterToc($(ev.currentTarget).val())
+            this.filterToc(ev.currentTarget.value)
         })
 
+        html.on("click", ".heading-link", ev => this._onClickPageLink(ev))
+
+        html.on('click', '.show-item', async(ev) => {
+            //TODO maybe try to open imported character
+            let itemId = ev.currentTarget.dataset.uuid
+            const item = await fromUuid(itemId)
+            item.sheet.render(true)
+        })
+
+        html.on('click', '.movePage', async(ev) => this.movePage(ev))
+
         html.on('click', '.loadBook', ev => {
-            this.selectedChapter = undefined
-            this.selectedType = undefined
-            this.content = undefined
-            this.loadBook($(ev.currentTarget).text(), html, $(ev.currentTarget).attr("data-type"))
+            this.loadBook($(ev.currentTarget).text(), html, ev.currentTarget.dataset.type)
         })
         html.on('click', '.getChapter', ev => {
             this.selectedType = $(ev.currentTarget).closest('.toc').attr("data-type")
-            this.selectedChapter = $(ev.currentTarget).attr("data-id")
+            this.selectedChapter = ev.currentTarget.dataset.id
             this.content = undefined
+            this.pageTocs = undefined
             this.loadPage(html)
         })
-        html.on('click', '.subChapter', ev => {
+        html.on('click', '.subChapter', async(ev) => {
             const name = $(ev.currentTarget).text()
-            const jid = $(ev.currentTarget).attr("data-jid")
+            const jid = ev.currentTarget.dataset.jid
             if (jid) {
-                this.loadJournalById(jid)
+                await this.loadJournalById(jid)
             } else {
                 $(this._element).find('.subChapter').removeClass('selected')
                 $(this._element).find(`[data-id="${name}"]`).addClass("selected")
-                this.loadJournal(name)
+                await this.loadJournal(name)
             }
+
+            this._saveScrollPositions(html)
+            html.find('.toc').html(await this.getToc())
+            this._restoreScrollPositions(html)
+
+            if(this.searchString) this.filterToc(this.searchString)
         })
 
         DSKChatAutoCompletion.bindRollCommands(html)
@@ -160,7 +190,7 @@ export default class BookWizard extends Application {
             this.pinJournal(id, name)
         })
         html.on('click', '.activateScene', ev => {
-            this.showSzene($(ev.currentTarget).attr("data-id"), $(ev.currentTarget).attr("data-mode"))
+            this.showSzene(ev.currentTarget.dataset.id, ev.currentTarget.dataset.mode)
         })
         html.on('click', '.fulltextsearch', (ev) => {
             this.fulltextsearch = !this.fulltextsearch
@@ -171,27 +201,73 @@ export default class BookWizard extends Application {
 
         html.on('mousedown', ".chapter img", ev => {
             let name = this.book.id
-            if (ev.button == 2) game.dsk.apps.DSKUtility.showArtwork({ name: name, uuid: "", img: $(ev.currentTarget).attr("src") })
+            if (ev.button == 2) DSKUtility.showArtwork({ name: name, uuid: "", img: $(ev.currentTarget).attr("src") })
         })
 
         DSKStatusEffects.bindButtons(html)
 
         html.on('click', '.importBook', async() => this.importBook())
-        
+
         bindImgToCanvasDragStart(html)
 
         slist(html, '.breadcrumbs', this.resaveBreadCrumbs)
-        this.heightFix()
     }
 
-    heightFix() {
-        const h = $(this._element).find('.breadcrumbs').height()
-        $(this._element).find('.col.seventy.scrollable').css({ "margin-bottom": `${h}px` })
+    async getPagy(chapter, journalId) {
+        const journals = this.journals.filter(x => x.flags.dsk.parent == chapter).sort((a, b) => a.flags.dsk.sort > b.flags.dsk.sort ? 1 : -1)
+        const targetindex = journals.findIndex(x => x._id == journalId)
+        return { journals, targetindex }
+    }
+
+    async movePage(ev) {
+        const dir = ev.currentTarget.dataset.action
+        let { journals, targetindex } = await this.getPagy(this.selectedChapter, this.selectedSubChapter)
+        let flattenedChapters = []
+
+        for(let chap of this.bookData.chapters){
+            for(let sub of chap.content){
+                flattenedChapters.push(sub.name)
+            }
+        }
+
+        let curChapterIndex = flattenedChapters.findIndex(x => x == this.selectedChapter)
+        this.bookData.chapters.findIndex(x => x.name == this.selectedChapter)
+
+        if(dir == "next") targetindex++
+        else targetindex--
+
+        if(targetindex < 0) {
+            this.selectedChapter = flattenedChapters[curChapterIndex - 1]
+            if(!this.selectedChapter) return
+
+            journals = (await this.getPagy(this.selectedChapter, undefined)).journals
+            targetindex = 0
+        } else if( targetindex >= journals.length) {
+            this.selectedChapter = flattenedChapters[curChapterIndex + 1]
+            if(!this.selectedChapter) return
+
+            journals = (await this.getPagy(this.selectedChapter, undefined)).journals
+            targetindex = 0
+        }
+
+        if(["prep", "foundryUsage"].includes(this.selectedChapter)) return
+
+        let journal = journals[targetindex]
+
+        if(journal) {
+            await this.loadJournalById(journal.id)
+        }
+
+        const toc = await this.getToc()
+        this._saveScrollPositions(this._element)
+        this._element.find('.toc').html(toc)
+        this._restoreScrollPositions(this._element)
     }
 
     async loadJournal(name) {
         await this.showJournal(this.journals.find(x => x.name == name && x.flags.dsk.parent == this.selectedChapter ))
     }
+
     async loadJournalById(id) {
         await this.showJournal(this.journals.find(x => x.id == id))
     }
@@ -204,11 +280,29 @@ export default class BookWizard extends Application {
         await game.settings.set("dsk", `breadcrumbs_${game.world.id}`, JSON.stringify(breadcrumbs))
     }
 
+    markFindings(html) {
+        const container = html.closest('.tocCollapsing')
+        container.find('.searchLines').remove()
+        const findings = html.find('.searchMatch')
+
+        if(findings.length == 0) return
+
+        const markers = []
+        const boundingRect = html.find("> div")[0].getBoundingClientRect()
+        for(let finding of findings){
+            const bounding = finding.getBoundingClientRect()
+            markers.push(`<div class="marker" style="top:${(bounding.top - boundingRect.top)/boundingRect.height*100}%"></div>`)
+            
+        }
+        const lines = $(`<div class="searchLines">${markers.join("")}</div>`)        
+        container.append(lines)
+    }
 
     async filterToc(val) {
+        this.searchString = val
         if (val != undefined) {
             val = val.toLowerCase().trim()
-            let content
+
             if (val != "") {
                 let result = []
                 if (this.fulltextsearch) {
@@ -237,34 +331,109 @@ export default class BookWizard extends Application {
 
                 $(this._element).find('.tocContent').html(`<ul>${result.join("\n")}</ul>`)
             } else {
-                content = await this.getToc()
-                $(this._element).find('.adventureWizard > .row-section > .toc').html(content).find(".filterJournals").focus()
+                const content = await this.getToc()
+                $(this._element).find('.toc').html(content).find(".filterJournals").trigger("focus")
             }
+        }
 
+        const journal = await this.getChapter()
+        const chapter = $(this._element).find('.chapter')
+        chapter.html(journal)
+        this.markFindings(chapter)
+    }
+
+    async showSearchResults(pageContent) {
+        if(this.searchString) {
+            await TextEditor._replaceTextContent(TextEditor._getTextNodes(pageContent), new RegExp(this.searchString, "ig"), (match, options) => {
+                return $(`<span class="searchMatch">${match[0]}</span>`)[0]
+            })
         }
     }
 
-    async showJournal(journal) {
+    _onClickPageLink(ev) {
+        const anchor = ev.currentTarget.closest("[data-anchor]")?.dataset.anchor;        
+        if ( anchor ) {
+          const element = this.element[0].querySelector(`.chapter [data-anchor="${anchor}"]`)
+          if ( element ) {
+            element.scrollIntoView({behavior: "smooth"});
+            return;
+          }
+        }
+        const page = this.element[0].querySelector(`.journalHeader`);
+        page?.scrollIntoView({behavior: "smooth"});
+    }
+
+    async _renderHeadings(toc, shiftFirst = false) {
+        const headings = Object.values(toc);
+        
+        if(shiftFirst) headings.shift();
+
+        const minLevel = Math.min(...headings.map(node => node.level));
+
+        return await renderTemplate("templates/journal/journal-page-toc.html", {
+          headings: headings.reduce((arr, {text, level, slug, element}) => {
+            if ( element ) element.dataset.anchor = slug;
+            if ( level < minLevel + 2 ) {
+                arr.push({text, slug, level: level - minLevel + 2});
+                
+            }
+            return arr;
+          }, [])
+        });
+        //tocNode.querySelectorAll(".heading-link").forEach(el => el.addEventListener("click", this._onClickPageLink.bind(this)));
+    }
+
+    async renderContent(journal) {
+        this.content = journal.id
         let content = ""
+        const pageTocs = []
         for(let page of journal.pages){
-            const sheet = page.sheet
+            const sheet = journal.sheet.getPageSheet(page.id)
             const data = await sheet.getData();
             const view = (await sheet._renderInner(data)).get();
-            let pageContent = $(view[view.length -1]).html()
+            const pageName = page.name.replace(/ Text$/gi, "")
+            const equalName = journal.name == pageName
+
+            const pageToc = JournalEntryPage.implementation.buildTOC(view)
+            pageTocs.push(await this._renderHeadings(pageToc, equalName))
+
+            let pageContent = view[view.length -1]
+            await this.showSearchResults(pageContent)
+            pageContent = $(pageContent).html()           
+
             if(page.type == "video") pageContent = `<div class="video-container">${pageContent}</div>`
+            if(!equalName) pageContent = `<h2 data-anchor="${page.name.slugify()}">${pageName}</h2>${pageContent}`
+
             content += pageContent
         }
+
+        this.pageTocs = pageTocs.join("")
+        
         const pinIcon = this.findSceneNote(journal.getFlag("dsk", "initId"))
         const enriched = await TextEditor.enrichHTML(content, {secrets: game.user.isGM, async: true})
-        this.content = `<div><h1 class="journalHeader" data-uuid="${journal.uuid}">${journal.name}<div class="jrnIcons">${pinIcon}<a class="pinJournal"><i class="fas fa-thumbtack"></i></a><a class="showJournal"><i class="fas fa-eye"></i></a></div></h1>${enriched}`
+        
+        return `<div><h1 class="journalHeader" data-uuid="${journal.uuid}">${journal.name}<div class="jrnIcons">${pinIcon}<a class="pinJournal"><i class="fas fa-thumbtack"></i></a><a class="showJournal"><i class="fas fa-eye"></i></a></div></h1>${enriched}`
+    }
+
+    async showJournal(journal) {
         const chapter = $(this._element).find('.chapter')
-        chapter.html(this.content)
+        chapter.html(await this.renderContent(journal))
+
+        this.selectedSubChapter = journal.id
+
+        $(this._element).find('.subChapter').removeClass('selected')
+        $(this._element).find(`[data-jid="${journal.id}"]`).addClass("selected")
         bindImgToCanvasDragStart(chapter)
-        chapter.find('.documentName-link, .entity-link, .content-link').click(ev => {
-            const elem = $(ev.currentTarget)
-            if (this.bookData && elem.attr("data-pack") == this.bookData.journal) {
-                ev.stopPropagation()    
-                this.loadJournalById(elem.attr("data-id"))
+        this.markFindings(chapter)
+        chapter.find('.documentName-link, .entity-link, .content-link').on('click', ev => {
+            const dataset = ev.currentTarget.dataset
+            if (this.bookData && dataset.pack == this.bookData.journal) {
+                //todo make this work for pages
+                if(dataset.type != "JournalEntryPage") {
+                    ev.stopPropagation()
+                    this.loadJournalById(dataset.id)
+                }
+
             }
         })
     }
@@ -278,18 +447,23 @@ export default class BookWizard extends Application {
     }
 
     async importBook() {
-        if (game.user.isGM) new InitializerForm().render(this.bookData.moduleName)
+        if (game.user.isGM) new InitializerForm().render(this.bookData.moduleName, this.bookData.options)
     }
 
-    async loadBook(id, html, type) {
+    async loadBook(id, html, type) {        
+        this.selectedChapter = undefined
+        this.selectedType = undefined
+        this.content = undefined
+
         if (!type) type = this.currentType
+
         this.currentType = type
         this.book = this[type].find(x => x.id == id)
         await fetch(this.book.path).then(async r => r.json()).then(async json => {
             this.bookData = json
             let journal = game.packs.get(json.journal)
                 //Need this to replace links
-            let index = await journal.getIndex()
+            await journal.getIndex()
             let entries = await journal.getDocuments()
             this.journals = entries
             if (json.actors) {
@@ -302,9 +476,26 @@ export default class BookWizard extends Application {
                 entries = await journal.getIndex()
                 this.scenes = entries
             }
+            this.checkChapters(journal)
             this.loadPage(html)
         })
+    }
 
+    checkChapters(journal) {
+        if(this.bookData.chapters) return
+
+        this.bookData.isDynamic = true
+        this.bookData.chapters = [
+            {
+                "name": game.i18n.localize(`${this.bookData.moduleName}.name`),
+                "content": journal.folders.map(x => {
+                    return {
+                        "name": x.name,
+                        "id": x.id
+                    }
+                })
+            }
+        ]
     }
 
     async prefillActors(chapter) {
@@ -361,12 +552,13 @@ export default class BookWizard extends Application {
     async getChapter() {
         if (this.book) {
             if (this.content) {
-                return this.content
+                const journal = this.journals.find(x => x.id == this.content)
+                return await this.renderContent(journal)
             }
             if (this.selectedChapter) {
                 if (this.selectedChapter == "prep") {
                     let info = {
-                        initDescr: game.i18n.format(`${this.bookData.moduleName}.importContent`, { defaultText: game.i18n.localize('dsk.importDefault') })
+                        initDescr: game.i18n.format(`${this.bookData.options?.scope || this.bookData.moduleName}.importContent`, { defaultText: game.i18n.localize('dsk.importDefault') })
                     }
 
                     let modules = this.bookData.modules
@@ -378,12 +570,12 @@ export default class BookWizard extends Application {
                 }
 
                 let chapter = this.bookData.chapters.find(x => x.name == this.selectedType).content.find(x => x.id == this.selectedChapter)
-
                 const subChapters = this.getSubChapters()
                 if (chapter.scenes || chapter.actors || subChapters.length == 0) {
                     return await renderTemplate('systems/dsk/templates/wizard/adventure/adventure_chapter.html', { chapter, subChapters: this.getSubChapters(), actors: await this.prefillActors(chapter) })
                 } else {
-                    return await this.loadJournal(subChapters[0].name)
+                    this.selectedSubChapter = subChapters[0].id
+                    return await this.loadJournalById(subChapters[0].id)
                 }
 
             }
@@ -393,6 +585,7 @@ export default class BookWizard extends Application {
                 rshs: this.filterBooks(this.rshs),
                 rules: this.filterBooks(this.books),
                 adventures: this.filterBooks(this.adventures),
+                manuals: this.filterBooks(this.manuals),
                 isGM: game.user.isGM
             })
         }
@@ -409,9 +602,19 @@ export default class BookWizard extends Application {
     }
 
     getSubChapters() {
-        return this.journals.filter(x => x.flags.dsk.parent == this.selectedChapter)
-        .sort((a, b) => a.flags.dsk.sort > b.flags.dsk.sort ? 1 : -1)
-        .map(x => {return {name: x.name, id: x.id}})
+        let jrns
+        if(this.bookData.isDynamic) {
+           jrns = this.journals.filter(x => x.folder.id == this.selectedChapter)
+                .sort((a, b) => a.sort > b.sort ? 1 : -1)
+        } else {
+            jrns = this.journals.filter(x => x.flags.dsk.parent == this.selectedChapter)
+                .sort((a, b) => a.flags.dsk.sort > b.flags.dsk.sort ? 1 : -1)
+        }
+
+        return jrns.map(x => {
+            const selected = this.selectedSubChapter == x.id
+            return {name: x.name, id: x.id, selected, cssClass: selected ? "selected" : ""}
+        })
     }
 
     async getToc() {
@@ -424,10 +627,18 @@ export default class BookWizard extends Application {
                     chapter = k.content.find(x => x.id == this.selectedChapter)
                     if (chapter) break
                 }
-                chapter.cssClass = "selected"
-                chapter.subChapters = this.getSubChapters()
+                if(chapter) {
+                    chapter.cssClass = "selected"
+                    chapter.subChapters = this.getSubChapters()
+                }
             }
-            return await renderTemplate('systems/dsk/templates/wizard/adventure/adventure_toc.html', { chapters, book: this.book, fulltextsearch: this.fulltextsearch ? "on" : "" })
+            return await renderTemplate('systems/dsk/templates/wizard/adventure/adventure_toc.html', { 
+                chapters, 
+                searchString: this.searchString, 
+                book: this.book,
+                pageTocs: this.pageTocs,
+                fulltextsearch: this.fulltextsearch ? "on" : "" 
+            })
         } else {
             return '<div class="libraryImg"></div>'
         }
@@ -437,19 +648,27 @@ export default class BookWizard extends Application {
     async loadPage(html) {
         const template = await this.getChapter()
         const toc = await this.getToc()
+
+        this._saveScrollPositions(html)
         html.find('.toc').html(toc)
-        html.find('.chapter').html(template)
+        const chapter = html.find('.chapter')
+        chapter.html(template)
+        this.markFindings(chapter)
+        this._restoreScrollPositions(html)
     }
 
     async getData(options) {
         const data = await super.getData(options);
         const currentChapter = await this.getChapter()
         const toc = await this.getToc()
+        const index = game.settings.get("dsk", "journalFontSizeIndex")
+        const fontSize = DSK.journalFontSizes[index - 1] || 14;
         mergeObject(data, {
             adventure: this.bookData,
             currentChapter,
             breadcrumbs: this.renderBreadcrumbs(),
-            toc
+            toc,
+            fontSize
         })
         return data
     }
@@ -505,13 +724,16 @@ export default class BookWizard extends Application {
     }
 
     moduleEnabled(id) {
-        return DSKUtility.moduleEnabled(id)
+        if(game.modules.get(id)) {
+            return game.modules.get(id).active ? "fa-check" : "fa-dash"
+        }
+        return "fa-times"
     }
 }
 
 class InitializerForm extends FormApplication {
-    render(mod) {
-        new game.dsk.apps.DSKInitializer("DSK Module Initialization", game.i18n.format(`${mod}.importContent`, { defaultText: game.i18n.localize("dsk.importDefault") }), mod, game.i18n.lang).render(true)
+    render(mod, options) {
+        new game.dsk.apps.DSKInitializer("DSK Module Initialization", game.i18n.format(`${options?.scope || mod}.importContent`, { defaultText: game.i18n.localize("dsk.importDefault") }), mod, game.i18n.lang, options).render(true)
     }
 }
 

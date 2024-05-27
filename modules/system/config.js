@@ -284,6 +284,8 @@ DSK.StFs = {
     "E": "E"
 }
 
+DSK.journalFontSizes = [8, 10, 12, 14, 16, 18, 20, 24, 28, 32];
+
 DSK.helpContent = [{
     name: "pay",
     command: "/pay [0-9]+",

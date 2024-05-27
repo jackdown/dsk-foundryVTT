@@ -6,7 +6,7 @@ export default class DPS {
         const ray = new Ray(tokenSource, tokenTarget)
         const tileDistance = ray.distance / gridSize
         const distance = tileDistance * canvas.scene.grid.distance
-        const elevation = Math.abs((getProperty(tokenSource, "system.elevation") || 0) - (getProperty(tokenTarget, "system.elevation") || 0))
+        const elevation = Math.abs((getProperty(tokenSource, "document.elevation") || 0) - (getProperty(tokenTarget, "document.elevation") || 0))
         const distanceSum = Math.hypot(distance, elevation)
         return {
             elevation,

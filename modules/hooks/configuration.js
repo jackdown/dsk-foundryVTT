@@ -29,6 +29,14 @@ export function setupConfiguration(){
             2: game.i18n.localize('dsk.SETTINGS.information2')
         }
     });
+    game.settings.register("dsk", "journalFontSizeIndex", {
+        name: "journalFontSizeIndex",
+        hint: "journalFontSizeIndex",
+        scope: "client",
+        config: false,
+        default: 5,
+        type: Number
+    })
     game.settings.register("dsk", "defaultConfigFinished", {
         name: "defaultConfigFinished",
         scope: "world",

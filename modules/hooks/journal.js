@@ -1,5 +1,6 @@
 import DSKStatusEffects from "../status/status_effects.js";
 import DSKChatAutoCompletion from "../system/chat_autocompletion.js";
+import DSK from "../system/config.js";
 import { bindImgToCanvasDragStart } from "./imgTileDrop.js";
 
 export function setupJournal(){
@@ -28,4 +29,25 @@ export function setupJournal(){
         html.find('img').mousedown(ev => { if (ev.button == 2) game.dsk.apps.DSKUtility.showArtwork({ name: obj.name, uuid: "", img: $(ev.currentTarget).attr("src") }) })
         bindImgToCanvasDragStart(html)
     })  
+}
+
+export async function increaseFontSize(element){
+    const index = game.settings.get("dsk", "journalFontSizeIndex")
+    let newIndex = index + 1
+    if(newIndex == DSK.journalFontSizes.length + 1) {
+        newIndex = 0
+        await game.settings.set("dsk", "journalFontSizeIndex", newIndex)
+        element.css("fontSize", "")
+        tinyNotification(game.i18n.format('dsk.CHATNOTIFICATION.fontsize', { size: "Default " }))
+    } else {
+        await game.settings.set("dsk", "journalFontSizeIndex", newIndex)
+        setOuterFontSize(element)
+    }
+}
+
+function setOuterFontSize(element){
+    const index = game.settings.get("dsk", "journalFontSizeIndex")
+    const size = DSK.journalFontSizes[index - 1] || 14;
+    tinyNotification(game.i18n.format('dsk.CHATNOTIFICATION.fontsize', { size }))
+    element.css("fontSize", `${size}px`)
 }
