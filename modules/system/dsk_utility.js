@@ -35,10 +35,11 @@ export default class DSKUtility {
     }
 
     static isActiveGM(){
-        //Prevent double update with multiple GMs, still unsafe
-        const activeGM = game.users.find((u) => u.active && u.isGM);
-        
-        return activeGM && game.user.id == activeGM.id
+        const activeGM = game.users.activeGM
+
+        if(!activeGM) ui.notifications.warn(game.i18n.localize("DSKError.requiresGM"))
+
+        return activeGM?.isSelf
     }
 
     static parseAbilityString(ability) {

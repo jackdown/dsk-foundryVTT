@@ -513,6 +513,7 @@
         },
         "DSKError": {
             "notFound": "{category} {name} nicht gefunden",
+            "requiresGM": "Diese Funktion funktioniert nur mit einem eingelogten Spielleiter.",
             "reportBug": "Fehler melden",
             "APUpdateError": "AP Wert konnte nicht angepasst werden. Bitte manuell durchführen.",
             "DamagePermission": "Du darfst den Schaden nicht übertragen.",

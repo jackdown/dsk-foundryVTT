@@ -187,6 +187,8 @@ export default class ActorDSK extends Actor {
     }
 
     static async postUpdateConditions(actor) {      
+      if(!DSKUtility.isActiveGM()) return
+      
       const data = actor.system
       const isMerchant = actor.isMerchant()
 
