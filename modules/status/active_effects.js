@@ -140,7 +140,7 @@ export default class DSKActiveEffectConfig extends ActiveEffectConfig {
 
     getStatusEffects() {
         return duplicate(CONFIG.statusEffects).map((x) => {
-            return { id: x.id, label: game.i18n.localize(x.name) };
+            return { id: x.id, name: game.i18n.localize(x.name) };
         }).sort((a, b) => a.name.localeCompare(b.name))
     }
 

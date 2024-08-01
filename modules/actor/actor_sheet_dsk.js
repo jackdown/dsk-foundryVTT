@@ -645,15 +645,9 @@ export default class ActorSheetDSK extends ActorSheet {
     async _deleteActiveEffect(id) {
         if (!this.isEditable) return
 
-        let item = this.actor.effects.find(x => x.id == id)
+        const item = this.actor.effects.get(id)
 
-        if (item) {
-            let actor = this.token ? this.token.actor : this.actor
-
-            if (actor) await this.actor.deleteEmbeddedDocuments("ActiveEffect", [item.id])
-
-            //Hooks.call("deleteActorActiveEffect", this.actor, item)
-        }
+        if (item) this.actor.deleteEmbeddedDocuments("ActiveEffect", [item.id])
     }
 
     _deleteItem(ev) {

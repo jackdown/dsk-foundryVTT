@@ -109,11 +109,6 @@ export class DiceSoNiceCustomization extends Application {
     static retrying = false
     static attrs = ["mu", "kl", "in", "ch", "ff", "ge", "ko", "kk", "attack", "damage"]
     initConfigs() {
-        const colors = game.dice3d.exports.Utils.prepareColorsetList()
-        this.choices = {}
-        for (const [key, value] of Object.entries(colors)) {
-            mergeObject(this.choices, value)
-        }
         const otherKey = { damage: "black" }
 
         game.settings.registerMenu("dsk", "dicesonicesettings", {
@@ -245,8 +240,9 @@ export class DiceSoNiceCustomization extends Application {
 
     async getData(options) {
         const data = await super.getData(options);
-        data.choices = this.choices
-        data.systems = game.dice3d.DiceFactory.systems
+        data.choices = game.dice3d.exports.Utils.prepareColorsetList()
+        delete data.choices.custom
+        data.systems = game.dice3d.exports.Utils.prepareSystemList()
         data.selections = {}
         for (const attr of DiceSoNiceCustomization.attrs) {
             data.selections[attr] = {
