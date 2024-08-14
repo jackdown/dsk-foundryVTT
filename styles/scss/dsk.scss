@@ -607,11 +607,11 @@ select[multiple] option {
 }
 
 #combat #combat-round .encounters {
+  color: #444;
+
   h4, a {
     color: #444;
   }
-
-  color: #444;
 }
 
 #combat-tracker .token-effect {
@@ -634,10 +634,10 @@ select[multiple] option {
   }
 
   .global-control {
+    margin-left: 10px;
     .playlist-header{
       color: white;
     }
-    margin-left: 10px;
   }
 }
 
@@ -1313,6 +1313,9 @@ form.dsk.item-sheet {
 }
 
 .window-app {
+  background: none;
+  box-shadow: none;
+
   &.dialog .window-content {
     padding-top: 14px;
     padding-bottom: 14px;
@@ -1345,9 +1348,6 @@ form.dsk.item-sheet {
   &.npc-sheet:after, &.character-sheet:after{
     content: unset;
   }
-
-  background: none;
-  box-shadow: none;
 
   .window-header, &:after {
     background-repeat: no-repeat;
@@ -1856,11 +1856,10 @@ li.folder {
 
 .expandDetails {
   &.shown {
+    display: block;
     .filterHide {
       display: block;
     }
-
-    display: block;
   }
 
   ul {
@@ -1924,14 +1923,14 @@ li.folder {
 }
 
 .row-section.skills.searchbox {
+  margin-bottom: 10px;
+  font-weight: normal;
+  color: rgb(14, 12, 12);
+
   input {
     display: inline-block;
     width: calc(100% - 20px);
   }
-
-  margin-bottom: 10px;
-  font-weight: normal;
-  color: rgb(14, 12, 12);
 }
 
 input[type="search"] {
@@ -2393,6 +2392,10 @@ input[type="search"] {
   }
 
   h3 {
+    border: none;
+    position: relative;
+    overflow: visible;
+
     &:before {
       background-image: url('../../icons/backgrounds/dsahead.webp'), url('../../icons/backgrounds/dsamid.webp');
       background-size: 100% 30px, 100% calc(100% - 30px);
@@ -2406,10 +2409,6 @@ input[type="search"] {
       z-index: -1;
       background-position: center 0px, center 30px;
     }
-
-    border: none;
-    position: relative;
-    overflow: visible;
   }
 
   #player-list {
@@ -2576,15 +2575,15 @@ h2 {
   }
 
   li {
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.2);
-      text-shadow: none;
-    }
-
     padding: 0px 4px;
     display: inline-block;
     border: 2px solid transparent;
     width: 100%;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.2);
+      text-shadow: none;
+    }
 
     &:before {
       height: 22px;
@@ -2650,12 +2649,12 @@ a {
   }
 
   &.bar3 {
+    position: absolute;
+    top: -45px;
+
     input {
       border: 1px solid #7cd000;
     }
-
-    position: absolute;
-    top: -45px;
   }
 }
 
@@ -2964,13 +2963,13 @@ select.noAppearance {
   }
 
   .toc {
+    list-style-type: none;
+    padding-left: 8px;
+
     ul {
       list-style-type: none;
       padding-left: 8px;
     }
-
-    list-style-type: none;
-    padding-left: 8px;
   }
 }
 
@@ -3049,11 +3048,11 @@ select.noAppearance {
   }
 
   .toc {
+    scrollbar-width: 6px;
+
     &::-webkit-scrollbar {
       width: 6px;
     }
-
-    scrollbar-width: 6px;
   }
 
   .picto {
@@ -3191,13 +3190,13 @@ select.noAppearance {
 }
 
 .initTracker .combatant-advanced {
+  height: var(--iniTrackerSize);
+
   i {
     left: 4px;
     bottom: 4px;
     right: unset;
-  }
-
-  height: var(--iniTrackerSize);
+  }  
 }
 
 .tinyEntityLink a {
@@ -3894,6 +3893,8 @@ select.noAppearance {
 
 .patchviewer {
   h1 {
+    margin: 0;
+
     a {
       display: block;
       float: left;
@@ -3905,9 +3906,7 @@ select.noAppearance {
       margin: 0;
       margin-right: 15px;
       float: left;
-    }
-
-    margin: 0;
+    }    
   }
 
   .table-title {
