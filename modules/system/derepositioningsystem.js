@@ -50,7 +50,7 @@ export default class DPS {
         DoorControl.prototype._onMouseDown = function(event) {
             if (!game.user.isGM && game.settings.get("dsk", "enableDPS")) {
                 if (!DPS.inDistance(this))
-                    return ui.notifications.warn(game.i18n.localize('dsk.DSKError.notInRangeToLoot'))
+                    return ui.notifications.warn('dsk.DSKError.notInRangeToLoot', { localize: true })
             }
             return originalDoorControl.apply(this, arguments)
         }

@@ -155,7 +155,7 @@ export default class WizardDSK extends Application {
     }
 
     _showInputValidation(choice, parent, app){
-        ui.notifications.error(game.i18n.localize("dsk.DSKError.MissingChoices"))
+        ui.notifications.error("dsk.DSKError.MissingChoices", { localize: true })
         let tabElem = choice.closest('.tab').attr("data-tab")
         app.activateTab(tabElem) 
         WizardDSK.flashElem(parent.find(`.tabs a[data-tab='${tabElem}']`))

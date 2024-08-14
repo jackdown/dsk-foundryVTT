@@ -214,7 +214,7 @@ export default class DSKInitializer extends Dialog {
                 for (let entry of createdEntries) {
                     this.scenes[entry.name] = entry;
                     const thumb = await entry.createThumbnail()
-                    await entry.update({thumb: thumb.thumb}, {diff: false});
+                    await entry.update({thumb: thumb.thumb})
                 }
                 //await Scene.update(scenesToUpdate)
                 //TODO this does not properly update walls?
@@ -286,7 +286,7 @@ export default class DSKInitializer extends Dialog {
         })
         this.lock = false
         initButton.find("i").remove()
-        ui.notifications.notify(game.i18n.localize("dsk.initComplete"))
+        ui.notifications.info("dsk.initComplete", { localize: true })
         await this.close()
     }
 
@@ -294,7 +294,7 @@ export default class DSKInitializer extends Dialog {
         if (game.settings.settings.has(`${this.module}.initialized`))
             await game.settings.set(this.module, "initialized", true)
 
-        ui.notifications.notify(game.i18n.localize("dsk.initSkipped"))
+        ui.notifications.info("dsk.initSkipped", { localize: true })
         await this.close()
     }
 

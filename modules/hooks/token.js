@@ -75,36 +75,6 @@ export function initTokenHook() {
         return this.effects.addChild(icon);
     }
 
-    TokenHUD.prototype._onToggleEffect = function(event, { overlay = false } = {}) {
-        event.preventDefault();
-        const img = event.currentTarget;
-        const effect = (img.dataset.statusId && this.object.actor) ?
-            CONFIG.statusEffects.find(e => e.id === img.dataset.statusId) :
-            img.getAttribute("src");
-
-        if (event.button == 0)
-            return this.object.incrementCondition(effect)
-        if (event.button == 2)
-            return this.object.decrementCondition(effect)
-    }
-
-    Token.prototype.incrementCondition = async function(effect, { active, overlay = false } = {}) {
-        const existing = this.actor.effects.find(e => e.statuses.has(effect.id));
-        if (!existing || Number.isNumeric(getProperty(existing, "flags.dsk.value")))
-            await this.actor.addCondition(effect.id, 1, false, false)
-        else if (existing)
-            await this.actor.removeCondition(effect.id, 1, false)
-
-        if (this.hasActiveHUD) canvas.tokens.hud.refreshStatusIcons();
-        return active;
-    }
-
-    Token.prototype.decrementCondition = async function(effect, { active, overlay = false } = {}) {
-        this.actor.removeCondition(effect.id, 1, false)
-        if (this.hasActiveHUD) canvas.tokens.hud.refreshStatusIcons();
-        return active;
-    }
-
     const defaulTokenLeftClick2 = Token.prototype._onClickLeft2
     const isMerchant = (actor) => {
         if (!actor) return false
@@ -116,7 +86,7 @@ export function initTokenHook() {
         const distanceAccessible = game.user.isGM || !game.settings.get("dsk", "enableDPS") || !isMerchant(this.actor) || DPS.inDistance(this)
 
         if (!distanceAccessible)
-            return ui.notifications.warn(game.i18n.localize('dsk.DSKError.notInRangeToLoot'))
+            return ui.notifications.warn('dsk.DSKError.notInRangeToLoot', { localize: true })
 
         defaulTokenLeftClick2.call(this, event)
     }

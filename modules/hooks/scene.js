@@ -5,7 +5,7 @@ export function setupScene() {
         if (!createData.grid?.units) doc.updateSource({ grid: { units: game.i18n.localize('dsk.gridUnits') }})
 
         if(!options.dskInit && createData.notes?.some(x => getProperty(x, "flags.dsk.initName"))){
-            ui.notifications.warn(game.i18n.localize('dsk.DSKError.mapsViaJournalbrowser'))
+            ui.notifications.warn('dsk.DSKError.mapsViaJournalbrowser', { localize: true })
         }
     })
 

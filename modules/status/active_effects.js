@@ -74,7 +74,7 @@ export default class DSKActiveEffectConfig extends ActiveEffectConfig {
 
     async checkTimesUpInstalled() {
         const isInstalled = DSKUtility.moduleEnabled("times-up")
-        if (!isInstalled && game.user.isGM) ui.notifications.warn(game.i18n.localize('dsk.DSKError.shouldTimesUp'))
+        if (!isInstalled && game.user.isGM) ui.notifications.warn('dsk.DSKError.shouldTimesUp', { localize: true })
         return isInstalled
     }
 
@@ -134,7 +134,7 @@ export default class DSKActiveEffectConfig extends ActiveEffectConfig {
         const inActor =
             getProperty(this.object, "system.document.parent.documentName") != "Actor" &&
             getProperty(this.object, "system.document.parent.parent");
-        if (inActor) ui.notifications.error(game.i18n.localize("dsk.DSKError.nestedEffectNotSupported"));
+        if (inActor) ui.notifications.error("dsk.DSKError.nestedEffectNotSupported", { localize: true })
         return await super._onSubmit(event, { updateData, preventClose, preventRender });
     }
 

@@ -35,7 +35,7 @@ export default class DialogReactDSK extends Dialog {
         let actor = canvas.tokens.get(speaker.token).actor
 
         if (!actor) {
-            ui.notifications.error(game.i18n.localize("dsk.DSKError.noProperActor"))
+            ui.notifications.error("dsk.DSKError.noProperActor", { localize: true })
             return {}
         }
         return {

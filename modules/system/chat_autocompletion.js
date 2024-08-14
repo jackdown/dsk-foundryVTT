@@ -179,7 +179,7 @@ export default class DSKChatAutoCompletion {
         if (!actor) actor = game.actors.get(speaker.actor);
 
         if (!actor) {
-            ui.notifications.error(game.i18n.localize("dsk.DSKError.noProperActor"))
+            ui.notifications.error("dsk.DSKError.noProperActor", { localize: true })
             return{}
         }
         return {

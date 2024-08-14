@@ -119,7 +119,7 @@ export function initChatContext() {
         const defenderSpeaker = cardData.speakerDefend.speaker;
         const actor = DSKUtility.getSpeaker(defenderSpeaker)
 
-        if (!actor.isOwner) return ui.notifications.error(game.i18n.localize("dsk.DSKError.DamagePermission"))
+        if (!actor.isOwner) return ui.notifications.error("dsk.DSKError.DamagePermission", { localize: true })
         await actor.applyDamage(cardData.damage[mode])
         await message.update({ "flags.data.damageApplied": true, content: message.content.replace(/hideAnchor">/, `hideAnchor"><i class="fas fa-check" style="float:right" data-tooltip="${game.i18n.localize("damageApplied")}"></i>`) })
     }
@@ -139,7 +139,7 @@ export function initChatContext() {
         let cardData = message.flags.data
         let actor = DSKUtility.getSpeaker(message.speaker)
         if (!actor.isOwner)
-            return ui.notifications.error(game.i18n.localize("dsk.DSKError.DamagePermission"))
+            return ui.notifications.error("dsk.DSKError.DamagePermission", { localize: true })
 
         
         const payType = (["ritual", "spell"].includes(cardData.preData.source.type) || getProperty(cardData.preData.calculatedSpellModifiers, "costsMana")) ? "AeP" : "KaP"
@@ -167,7 +167,7 @@ export function initChatContext() {
                     const message = await game.messages.get(li.attr("data-message-id"))
                     const actor = DSKUtility.getSpeaker(message.speaker)
                     if (!actor.isOwner)
-                        return ui.notifications.error(game.i18n.localize("dsk.DSKError.DamagePermission"))
+                        return ui.notifications.error("dsk.DSKError.DamagePermission", { localize: true })
 
                     await message.update({ "flags.data.healApplied": true, content: message.content.replace(/<\/div>$/, '<i class="fas fa-check" style="float:right"></i></div>') });
                     await actor.applyRegeneration(message.flags.data.postData.LeP, message.flags.data.postData.AeP, message.flags.data.postData.KaP)

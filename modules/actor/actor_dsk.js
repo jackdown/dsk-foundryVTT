@@ -1410,7 +1410,7 @@ export default class ActorDSK extends Actor {
                 return true;
             }
         }
-        ui.notifications.error(game.i18n.localize("dsk.DSKError.NotEnoughXP"));
+        ui.notifications.error("dsk.DSKError.NotEnoughXP", { localize: true });
         return false;
     }
 
@@ -1466,7 +1466,7 @@ export default class ActorDSK extends Actor {
                 const msg = game.i18n.format(ap > 0 ? "dsk.advancementCost" : "dsk.refundCost", { cost: Math.abs(ap) });
                 tinyNotification(msg);
             } else {
-                ui.notifications.error(game.i18n.localize("dsk.DSKError.APUpdateError"));
+                ui.notifications.error("dsk.DSKError.APUpdateError", { localize: true });
             }
         }
     }
@@ -1814,9 +1814,31 @@ export default class ActorDSK extends Actor {
             await this.update({ [`data.stats.AeP.value`]: newVal });
             return true
         } else {
-            ui.notifications.error(game.i18n.localize(`dsk.DSKError.NotEnoughAeP`));
+            ui.notifications.error('dsk.DSKError.NotEnoughAeP', { localize: true });
             return false
         }
+    }
+
+    async toggleStatusEffect(statusId, {active, overlay=false}={}) {
+      const existing = this.effects.find(e => e.statuses.has(statusId));
+  
+      if(overlay) {
+        if(active) return false
+  
+        this.removeCondition(statusId, 1, false)
+      } else {
+        if (!existing || Number.isNumeric(getProperty(existing, "flags.dsk.value"))) {
+          if(!active && active != undefined) return false
+          
+          await this.addCondition(statusId, 1, false, false)
+        }          
+        else {
+          if(active) return false
+  
+          await this.removeCondition(statusId, 1, false)
+        }
+            
+      }    
     }
 
     async actorEffects() {

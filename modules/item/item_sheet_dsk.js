@@ -98,7 +98,7 @@ export default class ItemSheetDSK extends ItemSheet {
 
         html.find(".status-add").click(() => {
             if (this.item.actor) {
-                ui.notifications.error(game.i18n.localize("dsk.DSKError.nestedEffectNotSupported"))
+                ui.notifications.error("dsk.DSKError.nestedEffectNotSupported", { localize: true })
             } else {
                 DSKStatusEffects.createCustomEffect(this.item, "", this.item.name)
             }
@@ -523,7 +523,7 @@ class ItemSheetAhnengeschenk extends ItemSheetDSK{
     }
     async setupEffect(ev) {
         if (this.item.actor.system.stats.AeP.value < 1)
-            return ui.notifications.error(game.i18n.localize("dsk.DSKError.NotEnoughAeP"))
+            return ui.notifications.error("dsk.DSKError.NotEnoughAeP", { localize: true })
 
         const cantrip = game.dsk.config.ItemSubClasses.ahnengeschenk
         await this.item.actor.update({ "system.stats.AeP.value": this.item.actor.system.stats.AeP.value -= 1 })

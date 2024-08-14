@@ -825,7 +825,7 @@ class ItemRangeweapon extends ItemDSK{
             }
             if(!hasAmmo && actor.type == "creature") hasAmmo = true
         }
-        if (!hasAmmo) ui.notifications.error(game.i18n.localize("dsk.DSKError.NoAmmo"))
+        if (!hasAmmo) ui.notifications.error("dsk.DSKError.NoAmmo", { localize: true })
 
         return hasAmmo
     }

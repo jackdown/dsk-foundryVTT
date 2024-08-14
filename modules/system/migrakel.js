@@ -105,7 +105,7 @@ export default class Migrakel {
         }
         await actor.createEmbeddedDocuments("Item", itemsToCreate);
         await actor.deleteEmbeddedDocuments("Item", itemsToDelete);
-        ui.notifications.notify(game.i18n.localize("dsk.Migrakel.migrationDone"));
+        ui.notifications.info("dsk.Migrakel.migrationDone", { localize: true });
     }
 
     static async updateSpellsAndLiturgies(actor) {

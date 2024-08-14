@@ -25,7 +25,7 @@ export default class DSKPayment {
             } else {
                 result.msg = game.i18n.format("dsk.PAYMENT.cannotpay", { actor: actor.name, amount: DSKPayment._moneyToString(money) })
                 if (silent) {
-                    ui.notifications.notify(result.msg)
+                    ui.notifications.info(result.msg)
                 }
             }
         }
@@ -111,7 +111,7 @@ export default class DSKPayment {
 
     static handlePayAction(elem, pay, amount, actor = undefined) {
         if (game.user.isGM && !actor) {
-            ui.notifications.notify(game.i18n.localize("dsk.PAYMENT.onlyActors"))
+            ui.notifications.info("dsk.PAYMENT.onlyActors", { localize: true })
             return
         }
         if (actor) DSKSoundEffect.playMoneySound(true)
@@ -123,7 +123,7 @@ export default class DSKPayment {
         } else if (actor && !pay) {
             result = DSKPayment.getMoney(actor, amount)
         } else {
-            ui.notifications.notify(game.i18n.localize("dsk.PAYMENT.onlyActors"))
+            ui.notifications.info("dsk.PAYMENT.onlyActors", { localize: true })
         }
         if (result && elem) {
             elem.fadeOut()

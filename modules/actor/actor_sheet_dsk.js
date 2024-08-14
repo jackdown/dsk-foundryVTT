@@ -546,7 +546,7 @@ export default class ActorSheetDSK extends ActorSheet {
                 break
         }
         if (!result)
-            ui.notifications.error(game.i18n.localize("dsk.DSKError.AdvanceMaximumReached"))
+            ui.notifications.error("dsk.DSKError.AdvanceMaximumReached", { localize: true })
 
         return result
     }
@@ -570,7 +570,7 @@ export default class ActorSheetDSK extends ActorSheet {
                 break
         }
         if (!result)
-            ui.notifications.error(game.i18n.localize("dsk.DSKError.AdvanceMaximumReached"))
+            ui.notifications.error("dsk.DSKError.AdvanceMaximumReached", { localize: true })
 
         return result
     }

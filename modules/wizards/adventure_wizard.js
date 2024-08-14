@@ -534,7 +534,7 @@ export default class BookWizard extends Application {
     async showSzene(name, mode = "activate") {
         let scene = game.scenes.contents.find(x => x.name == name)
         if (!scene)
-            return ui.notifications.error(game.i18n.localize("dsk.DSKError.sceneNotInitialized"))
+            return ui.notifications.error("dsk.DSKError.sceneNotInitialized", { localize: true })
 
         switch (mode) {
             case "activate":

@@ -105,10 +105,10 @@ export default class DSKpellDialog extends DialogShared {
                     if (newIndex < DSKpellDialog.bigTimes.length && newIndex >= 0) {
                         newPosition = DSKpellDialog.bigTimes[newIndex];
                     } else {
-                        ui.notifications.error(game.i18n.localize("dsk.DSKError.CastingTimeLimit"));
+                        ui.notifications.error("dsk.DSKError.CastingTimeLimit", { localize: true });
                     }
                 } else {
-                    ui.notifications.error(game.i18n.localize("dsk.DSKError.TimeCannotBeParsed"));
+                    ui.notifications.error("dsk.DSKError.TimeCannotBeParsed", { localize: true });
                 }
             } else {
                 newPosition = newPosition * (element.value > 0 ? 2 : 0.5);
@@ -137,7 +137,7 @@ export default class DSKpellDialog extends DialogShared {
                 newReach = Number(val[0]);
                 if (isNaN(newReach)) {
                     if(event) event.currentTarget.checked = false;
-                    ui.notifications.error(game.i18n.localize("dsk.DSKError.RangeCannotBeParsed"));
+                    ui.notifications.error("dsk.DSKError.RangeCannotBeParsed", { localize: true });
                 } else {
                     reach.text(newReach * 2 + " " + game.i18n.localize("dsk.step"));
                     mod += Number(element.value);

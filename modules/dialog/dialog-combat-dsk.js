@@ -43,7 +43,7 @@ export default class DSKCombatDialog extends DialogShared {
 
         html.on("mousedown", ".specAbs", (ev) => {
             if (html.find(".opportunityAttack").is(":checked")) {
-                ui.notifications.error(game.i18n.localize("dsk.DSKError.opposedAttackNoSpecAbs"));
+                ui.notifications.error("dsk.DSKError.opposedAttackNoSpecAbs", { localize: true });
                 return;
             }
             const elem = $(ev.currentTarget);

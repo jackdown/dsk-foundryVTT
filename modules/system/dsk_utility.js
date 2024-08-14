@@ -37,7 +37,7 @@ export default class DSKUtility {
     static isActiveGM(){
         const activeGM = game.users.activeGM
 
-        if(!activeGM) ui.notifications.warn(game.i18n.localize("DSKError.requiresGM"))
+        if(!activeGM) ui.notifications.warn("DSKError.requiresGM", { localize: true })
 
         return activeGM?.isSelf
     }
