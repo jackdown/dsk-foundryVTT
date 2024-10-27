@@ -983,7 +983,7 @@ class ItemAhnengabe extends ItemDSK{
     static getSpecAbModifiers(html) {
         let res = []
         for (let k of html.find(".specAbs.active")) {
-            res.push({name: k.dataset.name, title: k.getAttribute('title'), uuid: k.dataset.uuid})
+            res.push({name: k.dataset.name, title: k.dataset.tooltip, uuid: k.dataset.uuid})
         }
         return res
     }

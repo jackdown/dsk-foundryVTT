@@ -8,7 +8,7 @@ export default class DidYouKnow {
             this.fadeOut = false
             $(ev.currentTarget).find('i').removeClass("fa-stop").addClass("fa-angle-right")
             $('.didYouKnow').off('click')
-            $('.didYouKnow .closeDidYou').click(() => $('.didYouKnow').remove())
+            $('.didYouKnow .closeDidYou').on('click', () => $('.didYouKnow').remove())
         }else{
             fetch(`systems/dsk/lazy/didyouknow/${game.i18n.lang}.json`).then(async r => r.json()).then(async json => {
                 const msg = json.data[Math.floor(Math.random() * json.data.length)];
@@ -20,8 +20,8 @@ export default class DidYouKnow {
     }
 
     static activateListeners(){
-        $('.didYouKnow .stopFade').click(async(ev) => await this.stopFade(ev))
-        $('.didYouKnow').click(() => $('.didYouKnow').remove())
+        $('.didYouKnow .stopFade').on('click', async(ev) => await this.stopFade(ev))
+        $('.didYouKnow').on('click', () => $('.didYouKnow').remove())
         $('.didYouKnow').fadeIn()
     }
 

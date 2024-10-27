@@ -832,12 +832,6 @@ export default class ActorSheetDSK extends ActorSheet {
         }
     }
 
-    async _addUniqueItem(item) {
-        item = duplicate(item)
-        if (!this.actor.items.some(i => ItemDSK.areEquals(item, i)))
-            return (await this.actor.createEmbeddedDocuments("Item", [item]))[0];
-    }
-
     async _handleEffectWrapper(item) {
         this.actor.createEmbeddedDocuments("ActiveEffect", item.effects.map(x => {
             x.origin = null

@@ -150,17 +150,17 @@ export function initChatContext() {
  
     Hooks.on("getChatLogEntryContext", (html, options) => {
         options.push({
-                name: game.i18n.localize("dsk.CHATCONTEXT.hideData"),
+                name: "dsk.CHATCONTEXT.hideData",
                 icon: '<i class="fas fa-eye"></i>',
                 condition: canHideData,
                 callback: (li) => { showHideData(li) }
             }, {
-                name: game.i18n.localize("dsk.CHATCONTEXT.showData"),
+                name: "dsk.CHATCONTEXT.showData",
                 icon: '<i class="fas fa-eye"></i>',
                 condition: canUnhideData,
                 callback: (li) => { showHideData(li) }
             }, {
-                name: game.i18n.localize("dsk.regenerate"),
+                name: "dsk.regenerate",
                 icon: '<i class="fas fa-user-plus"></i>',
                 condition: canHeal,
                 callback: async(li) => {
@@ -173,42 +173,42 @@ export function initChatContext() {
                     await actor.applyRegeneration(message.flags.data.postData.LeP, message.flags.data.postData.AeP, message.flags.data.postData.KaP)
                 }
             }, {
-                name: game.i18n.localize("dsk.CHATCONTEXT.ApplyMana"),
+                name: "dsk.CHATCONTEXT.ApplyMana",
                 icon: '<i class="fas fa-user-minus"></i>',
                 condition: canCostMana,
                 callback: async(li) => { payMana(li) }
             }, {
-                name: game.i18n.localize("dsk.CHATCONTEXT.ApplyDamage"),
+                name: "dsk.CHATCONTEXT.ApplyDamage",
                 icon: '<i class="fas fa-user-minus"></i>',
                 condition: canHurt,
                 callback: li => { applyDamage(li, "value") }
             }, {
-                name: game.i18n.localize("dsk.CHATCONTEXT.ApplyDamageSP"),
+                name: "dsk.CHATCONTEXT.ApplyDamageSP",
                 icon: '<i class="fas fa-user-minus"></i>',
                 condition: canHurtSP,
                 callback: li => { applyDamage(li, "sp") }
             }, {
-                name: game.i18n.localize("dsk.CHATCONTEXT.ApplyDamage"),
+                name: "dsk.CHATCONTEXT.ApplyDamage",
                 icon: '<i class="fas fa-user-minus"></i>',
                 condition: canApplyDefaultRolls,
                 callback: li => { applyChatCardDamage(li, "value") }
             }, {
-                name: game.i18n.localize("dsk.CHATCONTEXT.ApplyDamageSP"),
+                name: "dsk.CHATCONTEXT.ApplyDamageSP",
                 icon: '<i class="fas fa-user-minus"></i>',
                 condition: canApplyDefaultRolls,
                 callback: li => { applyChatCardDamage(li, "sp") }
             }, {
-                name: game.i18n.localize("dsk.CHATCONTEXT.Reroll"),
+                name: "dsk.CHATCONTEXT.Reroll",
                 icon: '<i class="fas fa-dice"></i>',
                 condition: canReroll,
                 callback: li => { useFate(li, "reroll") }
             },  {
-                name: game.i18n.localize("dsk.CHATCONTEXT.talentedReroll"),
+                name: "dsk.CHATCONTEXT.talentedReroll",
                 icon: '<i class="fas fa-dice"></i>',
                 condition: isTalented,
                 callback: li => { useFate(li, "isTalented") }
             },  {
-                name: game.i18n.localize("dsk.CHATCONTEXT.rerollDamage"),
+                name: "dsk.CHATCONTEXT.rerollDamage",
                 icon: '<i class="fas fa-dice"></i>',
                 condition: canRerollDamage,
                 callback: li => { useFate(li, "rerollDamage") }

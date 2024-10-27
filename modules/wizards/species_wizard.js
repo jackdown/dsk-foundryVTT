@@ -24,7 +24,6 @@ export default class SpeciesWizard extends WizardDSK {
                     choices,
                     allowedCount: 1
                 })
-                break
             } else {
                 optionals.push(k.trim())
             }

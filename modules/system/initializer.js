@@ -64,14 +64,14 @@ export default class DSKInitializer extends Dialog {
                 let head = await this.getFolderForType("JournalEntry")
                 let headReplace = json.folders[0].name
                 if (head) {
-                    this.folders[head.data.name] = head
+                    this.folders[head.name] = head
                     json.folders.shift()
                 }
                 let createdFolders = await Folder.create(foldersToCreate)
                 if (!Array.isArray(createdFolders))
                     createdFolders = [createdFolders]
                 for (let folder of createdFolders)
-                    this.folders[folder.data.name] = folder;
+                    this.folders[folder.name] = folder;
 
                 const updates = []
                 for (let folder in this.folders) {
