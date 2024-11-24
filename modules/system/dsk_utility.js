@@ -213,6 +213,10 @@ export default class DSKUtility {
         return items.map(x => x.toObject());
     }
 
+    static moneyLocalization() {
+        return game.i18n.localize(`dsk.moneys.${game.settings.get('dsk', 'moneyChoice')}`)
+    }
+
     static async getFolderForType(documentType, parent = null, folderName = null, sort = 0, color = "", sorting = undefined) {
         let folder = await game.folders.contents.find(x => x.name == folderName && x.type == documentType && x.folder?.id == parent)
         if (!folder) {

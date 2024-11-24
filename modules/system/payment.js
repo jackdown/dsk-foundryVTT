@@ -145,7 +145,7 @@ export default class DSKPayment {
 
     static _moneyToString(money) {
         let coins = DSKPayment._moneyToCoins(money)        
-        return `<span class="nobr">${coins} <span data-tooltip="dsk.money" class="chatmoney" style="background-size:contain;background-image:url('systems/dsk/icons/categories/money.webp');"></span></span>`
+        return `<span class="nobr">${coins} <span data-tooltip="${DSKUtility.moneyLocalization()}" class="chatmoney" style="background-size:contain;background-image:url('systems/dsk/icons/categories/money.webp');"></span></span>`
     }
 
     static async chatListeners(html) {

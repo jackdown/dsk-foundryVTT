@@ -65,6 +65,18 @@ export function setupConfiguration(){
             2: game.i18n.localize('dsk.MERCHANT.onlyGM'),
         }
     });
+    game.settings.register("dsk", "moneyChoice", {
+        name: "dsk.SETTINGS.moneyChoice",
+        hint: "dsk.SETTINGS.moneyChoiceHint",
+        scope: "world",
+        config: true,
+        default: "dsk",
+        type: String,
+        choices: {
+            dsk: game.i18n.localize('dsk.moneys.dsk'),
+            fasar: game.i18n.localize('dsk.moneys.fasar'),            
+        }
+    });
     game.settings.register("dsk", "expandChatModifierlist", {
         name: "dsk.SETTINGS.expandChatModifierlist",
         hint: "dsk.SETTINGS.expandChatModifierlistHint",

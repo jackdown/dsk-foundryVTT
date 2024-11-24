@@ -138,6 +138,7 @@ export function initChatContext() {
         let message = game.messages.get(li.attr("data-message-id"))
         let cardData = message.flags.data
         let actor = DSKUtility.getSpeaker(message.speaker)
+
         if (!actor.isOwner)
             return ui.notifications.error("dsk.DSKError.DamagePermission", { localize: true })
 

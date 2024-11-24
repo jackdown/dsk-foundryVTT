@@ -126,16 +126,10 @@ export default class DSKActiveEffectConfig extends ActiveEffectConfig {
                 elem.find(".advancedFunctions").html(template);
             });
         });
-
+        if (this.object.statuses.size && game.i18n.has(this.object.description)) {
+            elem.find('[data-tab="details"] .editor').replaceWith(`<p>${game.i18n.localize(this.object.description)}</p>`);
+        }
         this.checkTimesUpInstalled()
-    }
-
-    async _onSubmit(event, { updateData = null, preventClose = false, preventRender = false } = {}) {
-        const inActor =
-            getProperty(this.object, "system.document.parent.documentName") != "Actor" &&
-            getProperty(this.object, "system.document.parent.parent");
-        if (inActor) ui.notifications.error("dsk.DSKError.nestedEffectNotSupported", { localize: true })
-        return await super._onSubmit(event, { updateData, preventClose, preventRender });
     }
 
     getStatusEffects() {

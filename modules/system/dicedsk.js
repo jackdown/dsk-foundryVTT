@@ -241,7 +241,7 @@ export default class DiceDSK{
                     damageBonusDescription.push(game.i18n.localize("dsk.statuseffects") + " " + statusDmg)
                 }
                 res["armorPen"] = armorPen
-                res["damageRoll"] = damageRoll.toJSON()
+                res["damageRoll"] = rollEffect.toJSON()
                 res["damage"] = rollEffect.total + statusDmg
                 res["damagedescription"] = damageBonusDescription.join("\n")
             }
@@ -1157,6 +1157,20 @@ export default class DiceDSK{
             )
         }
     }
+
+    static async wrapLock(ev, callback) {
+        const elem = $(ev.currentTarget);
+    
+        if (elem.hasClass('locked')) return;
+    
+        elem.addClass('locked');
+        elem.prepend('<i class="fas fa-spinner fa-spin"></i>');
+        await callback(ev, elem);
+        setTimeout(() => {
+          elem.removeClass('locked');
+          elem.find('i').remove();
+        }, 2000);
+      }
 
     static async chatListeners(html) {
         html.on("click", ".expand-mods", (event) => {

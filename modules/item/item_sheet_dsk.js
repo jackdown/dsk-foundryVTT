@@ -97,11 +97,7 @@ export default class ItemSheetDSK extends ItemSheet {
         })
 
         html.find(".status-add").click(() => {
-            if (this.item.actor) {
-                ui.notifications.error("dsk.DSKError.nestedEffectNotSupported", { localize: true })
-            } else {
-                DSKStatusEffects.createCustomEffect(this.item, "", this.item.name)
-            }
+            DSKStatusEffects.createCustomEffect(this.item, "", this.item.name)            
         })
 
         html.find('.condition-show').mousedown(ev => {
@@ -118,7 +114,7 @@ export default class ItemSheetDSK extends ItemSheet {
         html.find(".condition-toggle").mousedown(ev => {
             let condKey = $(ev.currentTarget).parents(".statusEffect").attr("data-id")
             let ef = this.item.effects.get(condKey)
-            ef.update({ disabled: !ef.system.disabled })
+            ef.update({ disabled: !ef.disabled })
         })
 
         html.find('.condition-edit').click(ev => {

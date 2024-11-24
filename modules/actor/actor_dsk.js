@@ -379,7 +379,7 @@ export default class ActorDSK extends Actor {
                   apply = false;
                   break;
               case "specialability":
-                  apply = item.system.category != "Combat" || [2, 3].includes(item.system.subcategory);
+                  apply = item.system.category != "Combat" || [2, 3].includes(Number(item.system.subcategory));
                   multiply = Number(item.system.level) || 1
                   break
               case "advantage":
@@ -1808,10 +1808,9 @@ export default class ActorDSK extends Actor {
     }
 
     async applyMana(amount) {
-
         const newVal = Math.min(this.system.stats.AeP.max, this.system.stats.AeP.value - amount);
         if (newVal >= 0) {
-            await this.update({ [`data.stats.AeP.value`]: newVal });
+            await this.update({ ['system.stats.AeP.value']: newVal });
             return true
         } else {
             ui.notifications.error('dsk.DSKError.NotEnoughAeP', { localize: true });

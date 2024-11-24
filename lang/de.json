@@ -318,6 +318,8 @@
             "showData": "Details für Spieler aufdecken"
         },
         "SETTINGS": {
+            "moneyChoice": "Währung",
+            "moneyChoiceHint": "Währungsbezeichnung für die Anzeige von Geldbeträgen",
             "hideOpposedDamage": "Ergebnis bei Vergleichsprobe verstecken",
             "hideOpposedDamageHint": "Versteckt z.B. den berechneten Schadenswert bei einer Vergleichsprobe.",
             "statusEffectCounterColor": "Farbe des Statuseffektzählers",
@@ -470,7 +472,7 @@
         "noDefense": "Keine Verteidigung",
         "UNITS": {
             "weight": "Gewicht in Zehntstein",
-            "money": "Wert in Mondglöckchen"
+            "money": "Wert in {money}"
         },
         "Racedescr": {
             "Scheunenkatze": "<p>Scheunenkatzen stellen die Mehrheit der Katzen Havenas. Sie sind Mischlinge unterschiedlichster Herkunft in allen erdenklichen Farben, ob grau getigert, schwarz mit oder ohne wei&szlig;e Flecken oder wei&szlig; mit r&ouml;tlichen und schwarzen Flecken. Auch ihr Fell varriiert zwischen kurz und lang, ebenso wie ihre K&ouml;rpergr&ouml;&szlig;e ganz unterschiedlich ausfallen kann.</p>\n<p>Menschen sch&auml;tzen sie als M&auml;usef&auml;nger, wobei manche eine r&auml;tselhafte Angst vor schwarzen Scheunenkatzen entwickelt haben. Viele Menschen messen Scheunenkatzen dar&uuml;ber hinaus keinen sonderlichen Wert zu, weshalb sie manchmal liebkost und manchmal gequ&auml;lt oder mit Steinen beworfen werden.</p>",
@@ -530,7 +532,6 @@
             "MacroItemMissing": "Dein Charakter hat kein Item namens {item}. Stelle sicher, dass dir entweder ein Charakter zugeordnet ist oder du einen Token für den Wurf markierst.",
             "MissingChoices": "Noch nicht alle Optionen ausgefüllt.",
             "noMatch": "Keine Übereinstimmung",
-            "nestedEffectNotSupported": "Foundry unterstützt das Hinzufügen von Effekten derzeit nur im Item Directory.",
             "notUnderstood": "Folgende Einträge  konnten nicht umgesetzt bzw. in der Datenbank gefunden werden. Bitte manuell anpassen/hinzufügen.",
             "itemNotFound": "Dieser Eintrag wurde nicht in der Datenbank gefunden, bitte manuell anlegen",
             "canNotBeAdded": "{item} der Kategory {category} kann nicht hinzugefügt werden. Dies ist keine unterstützte Kategorie.",
@@ -833,7 +834,10 @@
         "ITEMSHEET": {
             "offHandMod": "Bonus/Malus als Nebenhand (z.b. Parierwaffe)"
         },
-        "money": "Mondglöckchen",
+        "moneys": {
+            "dsk": "Mondglöckchen",
+            "fasar": "Glitzer"
+        },
         "each": "je",
         "closeCombatAttacks": "Nahkampfangriffe",
         "rangeCombatAttacks": "Fernkampfangriffe",
